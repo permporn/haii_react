@@ -21,7 +21,7 @@ class Content extends Component {
     }
     render() {
         const { siteLayout } = this.props;
-        const mainClassName = classNames('skin-blue sidebar-mini wysihtml5-supported',
+        const mainClassName = classNames('skin-dark-blue sidebar-mini wysihtml5-supported',
          {'sidebar-collapse' : siteLayout.get('pushMainMenu') == true} ,
          { "control-sidebar-open" : siteLayout.get('showRightNav') == true }
       )

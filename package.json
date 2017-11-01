@@ -18,9 +18,9 @@
     "lint": "eslint --ext .js,.jsx ./src",
     "lint-staged": "lint-staged",
     "lint-fix": "eslint --ext .js,.jsx ./src --fix",
-    "dev-server": "webpack-dev-server --env dev --hot --inline --port 5555 --progress --color --profile",
-    "dev-server-dash": "webpack-dashboard -- webpack-dev-server --env dev --hot --inline --port 5555 --progress --color --profile",
-    "prod-server": "webpack-dev-server --env prod -p --hot --inline --port 5555 --progress --color --profile",
+    "dev-server": "webpack-dev-server --env dev --hot --inline --port 5678 --progress --color --profile",
+    "dev-server-dash": "webpack-dashboard -- webpack-dev-server --env dev --hot --inline --port 5678 --progress --color --profile",
+    "prod-server": "webpack-dev-server --env prod -p --hot --inline --port 5678 --progress --color --profile",
     "build": "webpack --env prod -p",
     "build-mem-limit": "--max_old_space_size=768 webpack --env prod -p",
     "build-dev": "webpack --env dev -p"

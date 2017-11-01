@@ -41,12 +41,12 @@
 }
 
 @media screen and (max-height: 450px) {
-  .sidesubnav {padding-top: 15px;}
+  .sidesubnav {padding-top: 0px;}
   .sidesubnav a {font-size: 18px;}
 }
 
 .open {
-    width: 300px;
+    width: 250px;
 }
 .close {
     width : 0;
