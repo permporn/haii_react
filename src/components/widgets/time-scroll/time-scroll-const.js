@@ -1,0 +1,1 @@
+export const DAYS_LIMIT = 30;

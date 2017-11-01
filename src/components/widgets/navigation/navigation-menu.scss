@@ -1,0 +1,206 @@
+
+.sidesubnav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 18.79%;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+// for to hide hover admin lte effect main navigation
+@media (min-width: 768px){
+    .sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>a>span:not(.pull-right), .sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
+          display: none !important;
+    }
+
+}
+
+.sidesubnav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidesubnav a:hover {
+    color: #f1f1f1;
+}
+
+.sidesubnav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidesubnav {padding-top: 15px;}
+  .sidesubnav a {font-size: 18px;}
+}
+
+.open {
+    width: 300px;
+}
+.close {
+    width : 0;
+}
+.main-sidebar {
+    transition: 0.1s;
+}
+.skin-blue .sidebar-menu >li > a  {
+    text-decoration: none;
+}
+.parentmenu-collapse {
+    width : 49px;
+}
+
+// @media screen to adjust the sidemenu to look nice on different screen sizes.
+// For tablet devices.
+$width-subnav : 230px;
+
+@media screen and (min-width: 48em){
+	.sidesubnav {
+        left: $width-subnav;
+    }
+}
+// For laptop devices.
+@media screen and (min-width: 64em){
+	.sidesubnav {
+        left: $width-subnav;
+    }
+}
+
+@media screen and (min-width: 85em){
+	.sidesubnav {
+        left: $width-subnav;
+    }
+}
+
+@media screen and (min-width: 90em){
+	.sidesubnav {
+        left: $width-subnav;
+    }
+}
+// For desktop devices.
+@media screen and (min-width: 110em){
+	.sidesubnav {
+        left: $width-subnav;
+    }
+}
+.vertical-nav {
+    height:auto;
+    list-style:none;
+    width: 100%; /******* MODIFIED ********/
+    margin: 26px 0 0 0;
+    padding: 0px;
+}
+.vertical-nav li {
+    height: 50px;
+    margin: 0;
+    padding: 5px 0;
+    background-color: #1e282c;
+    border: none;
+    display: inline-block;
+    float: left;
+    clear:both;
+    width: 100%;  /******* MODIFIED ********/
+}
+.vertical-nav li:hover {
+    //background-color:#f36f25;
+    background-color:#367fa9;
+    color:#FFFFFF;
+}
+.vertical-nav li a {
+    font-family:Calibri, Arial;
+    font-size:18px;
+    font-weight:bold;
+    color:#ffffff;
+    text-decoration:none;
+    cursor: pointer;
+}
+.vertical-nav li.current {
+    background-color:#F36F25;
+}
+.vertical-nav li.current a {
+    color:#FFFFFF;
+}
+vertical-nav ul li ul {
+    display:none;
+    list-style-type:none;
+    width:125px;
+    padding:0px;
+    margin-top:3px;
+    margin-left:-5px;
+}
+vertical-nav ul li:hover ul {
+    display:block;
+}
+vertical-nav ul li:hover ul li {
+    background-color:#555555;
+    width:125px;
+    height:30px;
+    display:inline-block;
+}
+vertical-nav ul li ul li:hover {
+    background-color:#333333;
+}
+vertical-nav ul li ul li a {
+    color:#FFF;
+    text-decoration:underline;
+}
+vertical-nav ul li ul li a:hover {
+    text-decoration:none;
+}
+.vertical-nav li ul {
+    display: none;
+    margin-top: 10px;
+    padding: 0;
+}
+.vertical-nav li:hover ul {
+    display: block;
+}
+.vertical-nav li:hover .sub-menu
+{
+    position: relative;   
+    margin-top: -27.5px;
+}
+.sub-menu li
+{
+    position: relative;
+    display: block;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    min-width: 180px;
+    white-space: nowrap;
+    z-index:1;
+}
+.sub-menu li a
+{
+    display:inline-block;
+    padding: 0 10px;
+}
+
+// Srolling content for left navigation mneu.
+.left-menu-scroll {
+    height: 57em;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.left-menu-scroll::-webkit-scrollbar {
+    background-color: #222d32;
+}
+
+.left-menu-scroll::-webkit-scrollbar-thumb {
+    background-color: #B4B9BD;
+} 
+

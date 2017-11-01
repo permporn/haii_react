@@ -1,0 +1,39 @@
+div.scrollmenu {
+    cursor: hand;
+    //margin-top:36px;
+}
+.leaflet-bottom {
+    top: 502px;
+}
+div.scrollmenu a {
+    display: inline-block;
+    color: 	#DCDCDC;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+    cursor: hand;
+}
+
+div.scrollmenu a:hover {
+    background-color: #777;
+    cursor: hand;
+}
+.active-menu {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+.calendar-date {
+    display: inline-block;
+    padding: 8px 0 0 8px;
+    font-size: 12px;
+    height:32px;
+    margin-left: 1px;
+    background-color: rgba(0,0,0,0.45);
+    cursor: pointer;
+    color:	lemonchiffon;
+    position: relative;
+    margin-bottom: 1px;
+}
+div.calendar-date:hover {
+    opacity: 0.4;
+}

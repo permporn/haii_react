@@ -1,0 +1,16 @@
+.main-header .logo {
+    transition: 0.1s;
+}
+.large {
+    float: right;
+    margin-top: 11px;
+}
+.mainicon {
+    cursor: default;
+}
+.header-bar {
+    position: relative;
+    z-index: 1030;
+    float:left;
+    padding: 12px;
+}
