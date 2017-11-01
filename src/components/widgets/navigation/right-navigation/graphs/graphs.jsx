@@ -63,6 +63,36 @@ class Graphs extends Component {
             <div>
                 <div className="row">
                     <div className="col-md-12">
+                        <Box boxTitle="เฝ้าระวัง" collapsed={false} showMaximizeIcon={false}  >
+                         จ.ชัยนาท 
+                         จ.สุโขทัย
+                         จ.แพร่
+                         จ.เชียงใหม่
+                         จ.ลำปาง
+                         จ.แม่หฮ่องสอน
+                         จ.เชียงราย
+                         จ.น่าน   
+                        </Box>
+
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12">
+                        <Box boxTitle="วิกฤต" collapsed={false} showMaximizeIcon={false} >
+                         จ.ชัยนาท 
+                         จ.สุโขทัย
+                         จ.แพร่
+                         จ.เชียงใหม่
+                         จ.ลำปาง
+                         จ.แม่หฮ่องสอน
+                         จ.เชียงราย
+                         จ.น่าน   
+                        </Box>
+
+                    </div>
+                </div>
+                {/* <div className="row">
+                    <div className="col-md-12">
                         <Box boxTitle="Rain fall" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('LINE')} >
                             <Sparklines data={this.sampleData} width={100}>
                                 <SparklinesBars color="#41c3f9" />
@@ -71,7 +101,7 @@ class Graphs extends Component {
 
                     </div>
                 </div>
-                <div className="row">
+                {/* <div className="row">
                     <div className="col-md-12">
                         <Box boxTitle="Dam level" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('PIE')} >
                             <PieChart
@@ -103,7 +133,7 @@ class Graphs extends Component {
 
                     </div>
                 </div>
-                <MaximizeView handleClose={this.handleClose} viewType={viewType} showCompleteView={showCompleteView} />
+                <MaximizeView handleClose={this.handleClose} viewType={viewType} showCompleteView={showCompleteView} /> */}
             </div>
         );
     }
