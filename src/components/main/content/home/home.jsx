@@ -225,8 +225,7 @@ class Home extends Component {
         return (
             <div className="row">
                 <section className="col-lg-12 connectedSortable ui-sortable" >
-                    <div className="box box-primary">
-                        <div className="box-body" >
+                    
                             <Map id="map" className="map-wrapper" ref="map" center={[13.736717, 100.523186]} zoom={6}>
                                 <TileLayer
                                     attribution=''
@@ -270,8 +269,7 @@ class Home extends Component {
                                 {/* </LegendControl> */}
                             </Map>
 
-                        </div>
-                    </div>
+                   
                 </section>
             </div>
 

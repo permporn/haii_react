@@ -35,7 +35,7 @@ class Content extends Component {
                     <NavigationMenu pushMainMenu={siteLayout.get('pushMainMenu')} />
                     <RightNavigation toggleRightNav={this.props.toggleRightNav} siteLayout={this.props.siteLayout} />
                     <div className={contentWrapperClassName}>
-                        <section className="content-header">
+                        <section>
 
                             {/*<ol className="breadcrumb">
     								<li><a href="#"><i className="fa fa-dashboard"></i> Home</a></li>
