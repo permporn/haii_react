@@ -86,11 +86,8 @@ class NavigationMenu extends Component {
                     <div id="mySidenav" className={subNavClassName}>
                         
                         <a href="javascript:void(0)" className="closebtn" onClick={this.closeSubNav}>&times;</a>
-                        <ul className="vertical-nav">
-                        <li><a>80% 7 ต.ค 58</a></li>
-                        <li><a>70% 9 ต.ค 57</a></li>
-                        <li><a>60% 2 ต.ค 56</a></li>
-                        </ul>
+                        
+                        
                         {/* <ul className="vertical-nav">
                            {
                                 subMenuItems && subMenuItems.map((item, index) => {
@@ -108,6 +105,7 @@ class NavigationMenu extends Component {
                             <p>1 ต.ค. 58</p>
                           
                         </Collapsible>
+                        
                     </div>
                 </aside>
 
