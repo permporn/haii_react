@@ -1,4 +1,14 @@
+$bg-main-menu : #0e47a1!important;
+$sidesubnav : #2459a9!important;
 
+$hightlight : #09c2f8;
+
+.right-menu-scroll {
+    background: $bg-main-menu;
+}
+.skin-dark-blue .sidebar-menu > li:hover > a, .skin-dark-blue .sidebar-menu > li.active > a {
+    background: $hightlight;
+}
 .sidesubnav {
     height: 100%;
     width: 0;
@@ -6,10 +16,11 @@
     z-index: 1;
     top: 0;
     left: 18.79%;
-    background-color: #111;
+    background-color: $sidesubnav;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
+    opacity: 0.9;
 }
 // for to hide hover admin lte effect main navigation
 @media (min-width: 768px){
@@ -26,6 +37,7 @@
     color: #818181;
     display: block;
     transition: 0.3s;
+    background: $sidesubnav;
 }
 
 .sidesubnav a:hover {
@@ -53,6 +65,7 @@
 }
 .main-sidebar {
     transition: 0.1s;
+    background: $bg-main-menu;
 }
 .skin-blue .sidebar-menu >li > a  {
     text-decoration: none;
