@@ -4,7 +4,7 @@ import './navigation-menu.scss';
 import Bars from 'react-icons/lib/fa/bars';
 import classNames from 'classnames';
 import { MENU_LIST } from './menu-list';
-
+import Collapsible from 'react-collapsible';
 class NavigationMenu extends Component {
 
     constructor(props) {
@@ -98,6 +98,16 @@ class NavigationMenu extends Component {
                                 })
                             }
                         </ul> */}
+                        <Collapsible trigger="80% 7 ต.ค 58">
+                            <p>7 ต.ค. 58</p>
+                            <p>6 ต.ค. 58</p>
+                            <p>5 ต.ค. 58</p>
+                            <p>4 ต.ค. 58</p>
+                            <p>3 ต.ค. 58</p>
+                            <p>2 ต.ค. 58</p>
+                            <p>1 ต.ค. 58</p>
+                          
+                        </Collapsible>
                     </div>
                 </aside>
 
@@ -109,4 +119,10 @@ NavigationMenu.contextTypes = {
     history: PropTypes.object
 };
 
+
+
+  
+
 export default NavigationMenu;
+
+    
