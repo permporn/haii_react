@@ -12,7 +12,7 @@ gulp.task('server-webpack', [], function () {
     var compiler = webpack(webpackDevConfig),
         server = new WebpackDevServer(compiler, webpackDevServerConfig);
 
-    server.listen(5555, 'localhost', function (err) {
+    server.listen(8084, 'localhost', function (err) {
         if (err) {
             throw err;
         }

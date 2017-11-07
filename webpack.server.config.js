@@ -5,13 +5,13 @@ module.exports = {
     contentBase: buildDir,
     historyApiFallback: true,
     hot: true,
-    port: 5555,
+    port: 8084,
     stats: {
         children: false
     },
     proxy: {
-        '/api/v1/**': {
-            target: 'http://27.254.159.141:8082/',
+        '/haii/**': {
+            target: 'http://10.248.0.142:8082/',
             changeOrigin: true
         }
     },

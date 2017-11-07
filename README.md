@@ -9,7 +9,7 @@ Quick start:
     14: target: ''  , will be haii endpoint url
     
 4. Run webpack dev server `npm run dev-server`
-    - Development server will be started at localhost: 5555
+    - Development server will be started at localhost: 8084
     - Source code changes will be tracked and bundle rebuild will perform automatically
 
 To get development assets, run `npm run build-dev`. Assets will appear in the ./build directory.
