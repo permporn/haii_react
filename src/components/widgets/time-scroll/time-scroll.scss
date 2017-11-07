@@ -34,6 +34,15 @@ div.scrollmenu a:hover {
     position: relative;
     margin-bottom: 1px;
 }
+.calendar-previousdate {
+    background-color: rgba(160, 14, 14, 0.45);
+}
+.calendar-nextdate {
+    background-color :rgba(15, 119, 55, 0.45);
+}
 div.calendar-date:hover {
     opacity: 0.4;
+}
+.arrow {
+    cursor: default;
 }

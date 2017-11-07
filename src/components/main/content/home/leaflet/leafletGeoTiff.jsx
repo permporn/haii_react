@@ -9,8 +9,9 @@ type Props = {
 
 export default class LeafletGeoTiff extends MapLayer<L.LeafletGeotiff, Props> {
 
+
 createLeafletElement(props: Props): LeafletElement {
-    return new L.leafletGeotiff(
+    window.geoLayer = new L.leafletGeotiff(
       props.url,
       {
         band: 0,
@@ -24,12 +25,16 @@ createLeafletElement(props: Props): LeafletElement {
         arrowSize: 20,
       }
     )
+    window.geoLayer && window.geoLayer.setClip(props.clipMask);
+    window.map.addLayer(window.geoLayer);
+    return window.geoLayer;
   }
 
   updateLeafletElement(fromProps: Props, toProps: Props) {
     if (!this.leafletElement.options.clip)
       this.leafletElement.setClip(fromProps.clipMask);
     if (toProps.url !== fromProps.url) {
+      window.map.addLayer(window.geoLayer);
       this.leafletElement.setURL(toProps.url);
     }
 

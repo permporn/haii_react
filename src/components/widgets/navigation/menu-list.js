@@ -1,36 +1,53 @@
 export const MENU_LIST =
     [{
-        header: 'Forcast Analytic',
+        header: 'Monitoring',
         id: 1,
-        iconClassName: 'fa fa-tasks',
+        iconClassName: 'ti-eye pad-right',
         children: [
-            // {
-            //      name: 'Current',
-            //      link: '/'
-            // },
-            // { name: 'Historical', id: 2, link: '/' }
+            {
+                name: 'GsMap',
+                layer: 'GSMAP',
+                link: '/'
+            },
+            {
+                name: 'SST',
+                layer: 'SST',
+                id: 2,
+                link: '/'
+            },
+            {
+                name: 'Rainfall',
+                layer: 'RAINFALL',
+                id: 2,
+                link: '/'
+            },
+            {
+                name: 'Water level',
+                layer: 'WATERLEVEL',
+                id: 2,
+                link: '/'
+            }
         ]
-    }, 
-        // {
-        //     header: 'Weather',
-        //     id: 2,
-        //     iconClassName: 'fa fa-cloud',
-        //     children: [
-        //         {
-        //             name: 'Rainfall',
-        //             link: '/about'
-        //         },
-        //         {
-        //             name: 'Wind',
-        //             link: '/services'
-        //         }
-        //     ]
-        // },
-        // {
-        //     header: 'Sensors',
-        //     iconClassName: 'ti-angle-double-left',
-        //     id: 3
-        // }
+    },
+    {
+        header: 'Forecast analytics',
+        id: 2,
+        iconClassName: 'ti-cloud pad-right',
+        children: [
+            {
+                name: 'GSMAP match',
+                layer: 'GSMAPMATCH'
+            },
+            {
+                name: 'SST match',
+                layer: 'SSTMATCH',
+            },
+            {
+                name: 'Combined match',
+                layer: 'COMBINEDMATCH',
+            }
+        ]
+    }
 
     ]
 

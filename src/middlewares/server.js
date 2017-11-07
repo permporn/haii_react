@@ -3,7 +3,7 @@ import { xml2json } from 'xml2json-light';
 import { pushPath } from 'redux-simple-router';
 import $ from 'jquery';
 
-const baseUrl = 'http://27.254.159.141:8082/';
+const baseUrl = 'http://27.254.159.141:8085/';
 const baseUrlHBase = 'http://27.254.159.141:8047/';
 const geoJsonBase = 'http://watersituation.thaiwater.net/v1/public/resources/json/';
 const clipUrl = 'https://api.myjson.com/';

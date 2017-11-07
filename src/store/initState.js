@@ -10,7 +10,13 @@ export const defaultInitState = {
         thaiBoundaryData: [],
         rainFall: [],
         dailyDam: [],
-        clipMask: []
+        clipMask: [],
+        latestWaterLevel: [],
+        mapLayer: 'BOUNDARY',
+        time: new Date("Aug 2, 2017 07:00"),
+        date: new Date("Aug 2, 2017"),
+        gsMapMatch : [],
+        sstMapMatch: []
     }),
     siteLayout: Immutable.fromJS({
         showRightNav : false,

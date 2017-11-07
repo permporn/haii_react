@@ -1,11 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import classNames from 'classnames';
+import './box.scss';
 
 class Box extends Component {
 
     static defaultProps = {
-        showMaximizeIcon: false
+        showMaximizeIcon: false,
+        collapsed: false
     }
 
     constructor(props) {
@@ -23,17 +25,17 @@ class Box extends Component {
     // render method of Class
     render() {
         const { collapsed } = this.state;
-        const { showMaximizeIcon } = this.props;
-        const boxClassName = classNames("box box-default", { "collapsed-box": collapsed == true });
+        const { showMaximizeIcon, key } = this.props;
+        const boxClassName = classNames("box-body", { "box-close": collapsed == true });
         const iconClassName = classNames({ "fa fa-plus": collapsed == true },
             { "fa fa-minus": collapsed == false }
         )
         return (
-            <div className={boxClassName}>
+            <div key={key} className="box box-default">
                 <div className="box-header with-border">
                     <h3 className="box-title">{this.props.boxTitle}</h3>
                     <div className="box-tools pull-right">
-                        {showMaximizeIcon == true ? <span onClick={this.props.showCompleteView}  className="btn btn-box-tool" ><i className="fa fa-th-large"></i>
+                        {showMaximizeIcon == true ? <span onClick={this.props.showCompleteView} className="btn btn-box-tool" ><i className="fa fa-th-large"></i>
                         </span> : null}
                         <span onClick={this.toggleColapse} className="btn btn-box-tool" ><i className={iconClassName}></i>
                         </span>
@@ -41,8 +43,10 @@ class Box extends Component {
 
                 </div>
 
-                <div className="box-body" >
-                    {this.props.children}
+                <div className={boxClassName} >
+                    {React.cloneElement(this.props.children, {
+                       
+                    })}
                 </div>
 
             </div>

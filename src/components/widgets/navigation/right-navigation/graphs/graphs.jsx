@@ -10,6 +10,16 @@ import Pie_Chart from '../../right-navigation/graphs/pie-chart';
 import Bar_Chart from '../../right-navigation/graphs/bar-chart';
 import { Pie } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
+import {
+    Table,
+    TableBody,
+    TableFooter,
+    TableHeader,
+    TableHeaderColumn,
+    TableRow,
+    TableRowColumn,
+} from 'material-ui/Table';
+import Paper from 'material-ui/Paper';
 
 
 class Graphs extends Component {
@@ -19,7 +29,16 @@ class Graphs extends Component {
 
         this.state = {
             showCompleteView: false,
-            viewType: ''
+            viewType: '',
+            fixedHeader: true,
+            fixedFooter: true,
+            stripedRows: false,
+            showRowHover: true,
+            selectable: false,
+            multiSelectable: false,
+            enableSelectAll: false,
+            deselectOnClickaway: false,
+            showCheckboxes: false
         }
         // Test data for the chart.
         this.sampleData = [
@@ -59,41 +78,179 @@ class Graphs extends Component {
             { label: 'Dam 3', value: 25.0 }
         ];
         const { viewType, showCompleteView } = this.state;
+        const { gsMapMatch, sstMapMatch } = this.props;
         return (
             <div>
                 <div className="row">
                     <div className="col-md-12">
-                        <Box boxTitle="เฝ้าระวัง" collapsed={false} showMaximizeIcon={false}  >
-                         จ.ชัยนาท 
-                         จ.สุโขทัย
-                         จ.แพร่
-                         จ.เชียงใหม่
-                         จ.ลำปาง
-                         จ.แม่หฮ่องสอน
-                         จ.เชียงราย
-                         จ.น่าน   
-                        </Box>
+                        <Paper style={{ padding: '20px' }} zDepth={2} >
+                            GSMAP match
+                            <Table
+                                height={this.state.height}
+                                fixedHeader={this.state.fixedHeader}
+                                fixedFooter={this.state.fixedFooter}
+                                selectable={this.state.selectable}
+                                multiSelectable={this.state.multiSelectable}
+                            >
+                                <TableHeader
+                                    displaySelectAll={this.state.showCheckboxes}
+                                    adjustForCheckbox={this.state.showCheckboxes}
+                                    enableSelectAll={this.state.enableSelectAll}
+                                >
+                                    <TableRow>
+                                        <TableHeaderColumn colSpan={2} >Date</TableHeaderColumn>
+                                        <TableHeaderColumn >GS</TableHeaderColumn>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody
+                                    displayRowCheckbox={this.state.showCheckboxes}
+                                    deselectOnClickaway={this.state.deselectOnClickaway}
+                                    showRowHover={this.state.showRowHover}
+                                    stripedRows={this.state.stripedRows}
+                                >
+                                    {
+                                        gsMapMatch.map((data, index) => {
+                                            let date = Object.keys(data)[0];
+                                            if (date) {
+                                                let year = date.substring(0, 4);
+                                                let mon = date.substring(4, 6);
+                                                let dat = date.substring(6, 8);
+                                                return(<TableRow style={{ color: '#696969' }} >
+                                                    <TableRowColumn colSpan={2} style={{
+                                                        whiteSpace: 'normal',
+                                                        wordWrap: 'break-word'
+                                                    }}>{mon} {dat}</TableRowColumn>
+                                                    <TableRowColumn >...</TableRowColumn>
+                                                </TableRow>)
+                                            }
 
+                                        })
+                                    }
+
+
+                                </TableBody>
+                                <TableFooter>
+                                    <TableRow>
+                                        <TableRowColumn colSpan="2" style={{ textAlign: 'center' }}>
+
+                                        </TableRowColumn>
+                                    </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </Paper>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-md-12">
-                        <Box boxTitle="วิกฤต" collapsed={false} showMaximizeIcon={false} >
-                         จ.ชัยนาท 
-                         จ.สุโขทัย
-                         จ.แพร่
-                         จ.เชียงใหม่
-                         จ.ลำปาง
-                         จ.แม่หฮ่องสอน
-                         จ.เชียงราย
-                         จ.น่าน   
-                        </Box>
+                        <Paper style={{ padding: '20px' }} zDepth={2} >
+                            SST match
+                            <Table
+                                height={this.state.height}
+                                fixedHeader={this.state.fixedHeader}
+                                fixedFooter={this.state.fixedFooter}
+                                selectable={this.state.selectable}
+                                multiSelectable={this.state.multiSelectable}
+                            >
+                                <TableHeader
+                                    displaySelectAll={this.state.showCheckboxes}
+                                    adjustForCheckbox={this.state.showCheckboxes}
+                                    enableSelectAll={this.state.enableSelectAll}
+                                >
+                                    <TableRow>
+                                        <TableHeaderColumn >Date</TableHeaderColumn>
+                                        <TableHeaderColumn >SST</TableHeaderColumn>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody
+                                    displayRowCheckbox={this.state.showCheckboxes}
+                                    deselectOnClickaway={this.state.deselectOnClickaway}
+                                    showRowHover={this.state.showRowHover}
+                                    stripedRows={this.state.stripedRows}
+                                >
+                                {
+                                    sstMapMatch.map((data, index) => {
+                                        let date = Object.keys(data)[0];
+                                        if (date) {
+                                            let year = date.substring(0, 4);
+                                            let mon = date.substring(4, 6);
+                                            let dat = date.substring(6, 8);
+                                            return(<TableRow style={{ color: '#696969' }} >
+                                                <TableRowColumn colSpan={2} style={{
+                                                    whiteSpace: 'normal',
+                                                    wordWrap: 'break-word'
+                                                }}>{mon} {dat}</TableRowColumn>
+                                                <TableRowColumn >...</TableRowColumn>
+                                            </TableRow>)
+                                        }
 
+                                    })
+                                }
+
+                                </TableBody>
+                                <TableFooter>
+                                    <TableRow>
+                                        <TableRowColumn colSpan="2" style={{ textAlign: 'center' }}>
+
+                                        </TableRowColumn>
+                                    </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </Paper>
                     </div>
                 </div>
-                {/* <div className="row">
+                <div className="row">
                     <div className="col-md-12">
-                        <Box boxTitle="Rain fall" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('LINE')} >
+                        <Paper style={{ padding: '20px' }} zDepth={2} >
+                            COMBINED match
+                            <Table
+                                height={this.state.height}
+                                fixedHeader={this.state.fixedHeader}
+                                fixedFooter={this.state.fixedFooter}
+                                selectable={this.state.selectable}
+                                multiSelectable={this.state.multiSelectable}
+                            >
+                                <TableHeader
+                                    displaySelectAll={this.state.showCheckboxes}
+                                    adjustForCheckbox={this.state.showCheckboxes}
+                                    enableSelectAll={this.state.enableSelectAll}
+                                >
+                                    <TableRow>
+                                        <TableHeaderColumn >Date</TableHeaderColumn>
+                                        <TableHeaderColumn >Combined</TableHeaderColumn>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody
+                                    displayRowCheckbox={this.state.showCheckboxes}
+                                    deselectOnClickaway={this.state.deselectOnClickaway}
+                                    showRowHover={this.state.showRowHover}
+                                    stripedRows={this.state.stripedRows}
+                                >
+                                    <TableRow style={{ color: '#696969' }} >
+                                        <TableRowColumn style={{
+                                            whiteSpace: 'normal',
+                                            wordWrap: 'break-word'
+                                        }}>1</TableRowColumn>
+                                        <TableRowColumn style={{
+                                            whiteSpace: 'normal',
+                                            wordWrap: 'break-word'
+                                        }}>view</TableRowColumn>
+                                    </TableRow>
+
+                                </TableBody>
+                                <TableFooter>
+                                    <TableRow>
+                                        <TableRowColumn colSpan="2" style={{ textAlign: 'center' }}>
+
+                                        </TableRowColumn>
+                                    </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </Paper>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12">
+                        <Box key="RAIN_BOX" boxTitle="Rain fall" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('LINE')} >
                             <Sparklines data={this.sampleData} width={100}>
                                 <SparklinesBars color="#41c3f9" />
                             </Sparklines>
@@ -101,9 +258,9 @@ class Graphs extends Component {
 
                     </div>
                 </div>
-                {/* <div className="row">
+                <div className="row">
                     <div className="col-md-12">
-                        <Box boxTitle="Dam level" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('PIE')} >
+                        <Box key="DAM_BOX" boxTitle="Dam level" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('PIE')} >
                             <PieChart
                                 data={pieData}
                                 width={190}
@@ -116,24 +273,17 @@ class Graphs extends Component {
 
                     </div>
                 </div>
-              
-                <div className="row">
-                    <div className="col-md-12">
-                        <Box boxTitle="Dam Level" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('PIE')} >
-                            <Pie_Chart />
-                        </Box>
 
-                    </div>
-                </div>
+
                 <div className="row">
-                    <div className="col-md-12">
+                    <div key="RAIN_LEVEL_BOX" className="col-md-12">
                         <Box boxTitle="Rain - level" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('PIE')} >
                             <Bar_Chart />
                         </Box>
 
                     </div>
                 </div>
-                <MaximizeView handleClose={this.handleClose} viewType={viewType} showCompleteView={showCompleteView} /> */}
+                <MaximizeView handleClose={this.handleClose} viewType={viewType} showCompleteView={showCompleteView} />
             </div>
         );
     }

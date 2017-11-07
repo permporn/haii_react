@@ -6,11 +6,16 @@ import './home.scss';
 import classNames from 'classnames';
 import { Map, Marker, TileLayer, ImageOverlay, GeoJSON, LayersControl, LayerGroup, FeatureGroup } from 'react-leaflet';
 //leaflet full screen.
-import './leaflet/leaflet-fullscreen/fullscreen.js';
-import './leaflet/leaflet-fullscreen/fullscreen.scss';
+import './leaflet/leaflet-fullscreen/Fullscreen.js';
+import './leaflet/leaflet-fullscreen/Fullscreen.scss';
 import LegendControl from 'widgets/map/legend-map';
 import TimeScroll from 'widgets/time-scroll/time-scroll';
-import { getTeleStationData, getDamData, getHbaseData, getThaiBoundary, getRainfall, getDailyDamByType , getClipMask } from 'actions/map.action';
+import {
+    getTeleStationData, getDamData, getHbaseData, getThaiBoundary, getRainfall
+    , getDailyDamByType, getClipMask, updateDate, updateTime, getLatestWaterLevel,
+    getSSTMatch, getGsMapMatch
+
+} from 'actions/map.action';
 import { pushMainMenu } from 'actions/siteLayout.action';
 import L from 'leaflet';
 import HbaseMapLayer from './hbase/hbase-dam';
@@ -18,6 +23,7 @@ import HbaseMapLayer from './hbase/hbase-dam';
 import DateRangePicker from 'widgets/date-range-picker/date-range-picker';
 import { loadGeoTiff } from 'widgets/leaflet/leaflet-geotiff';
 import LeafletGeoTiff from './leaflet/leafletGeoTiff';
+import { formatDate } from 'widgets/util/format-date';
 
 function style(feature) {
     return {
@@ -42,6 +48,8 @@ function highlightFeature(e) {
     });
 }
 
+
+
 // reset default style on mouseOut
 function resetHighlight(component, e) {
     // geojsonresetStyle(e.target);
@@ -62,6 +70,16 @@ function onEachFeature(component, feature, layer) {
 }
 
 function onEachTeleFeature(component, feature, layer) {
+    let iconRain = L.icon({
+        iconUrl: `public/${feature.style.iconUrl}`,
+        //shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+
+        iconSize: feature.style.iconSize, // size of the icon
+        //shadowSize:   [5, 24], // size of the shadow
+        iconAnchor: feature.style.iconAnchor, // point of the icon which will correspond to marker's location
+        //shadowAnchor: [17, 42],  // the same for the shadow
+        popupAnchor: feature.style.popupAnchor // point from which the popup should open relative to the iconAnchor
+    });
     if (feature.properties) {
         var popupString = '<div class="popup">';
         for (var k in feature.properties) {
@@ -70,6 +88,7 @@ function onEachTeleFeature(component, feature, layer) {
         }
         popupString += '</div>';
         layer.bindPopup(popupString);
+        layer.setIcon(iconRain);
     }
 
 }
@@ -81,19 +100,18 @@ class Home extends Component {
         super(props);
 
         this.state = {
-            url: 'http://27.254.159.141:8082/haii/gsmap/2017/08/01',
-            baseUrl: 'http://27.254.159.141:8082/haii/gsmap',
+            url: 'http://27.254.159.141:8085/haii/gsmap/2017/08/01',
+            baseUrl: 'http://27.254.159.141:8085/haii/gsmap',
             showMainNav: true,
-            sstBaseUrl: 'http://27.254.159.141:8082/haii/sst',
-            sstUrl: 'http://27.254.159.141:8082/haii/sst/2017/08/01',
-            selectedLayer: 'GsMAP'
+            sstBaseUrl: 'http://27.254.159.141:8085/haii/sst',
+            sstUrl: 'http://27.254.159.141:8085/haii/sst/2017/08/01'
         }
     }
     updateImage = (date) => {
-        this.props.getRainfall(date, '07:00');
-        const { baseUrl, selectedIndex, selectedLayer, sstBaseUrl } = this.state;
-        switch (selectedLayer) {
-            case 'GsMAP':
+        const { mapLayer } = this.props;
+        const { baseUrl, selectedIndex, sstBaseUrl } = this.state;
+        switch (mapLayer) {
+            case 'GSMAP':
                 let imageUrl = `${baseUrl}/${date}`;
                 this.setState({
                     url: imageUrl
@@ -110,30 +128,45 @@ class Home extends Component {
         }
 
     }
-    getDatesForMapData = () => {
-        let msec = Date.parse("Aug 1, 2017");
-        let date = new Date(msec);
-        var days = [];
-        let i = 14;
-        while (i >= 0) {
-            days.push(new Date(date));
-            date.setDate(date.getDate() + 1);
-            i = i - 1;
-        }
-        return days;
-    }
     onDateChange = (e, date) => {
         const month = ("0" + (date.getMonth() + 1)).slice(-2),
             dat = ("0" + date.getDate()).slice(-2);
         this.updateImage(`${date.getFullYear()}/${month}/${dat}`);
     }
+    updateDataByDate = (date) => {
+        const { time } = this.props;
+        this.props.updateDate(date);
+        const layerDate = new Date(date);
+        const mon = ("0" + (layerDate.getMonth() + 1)).slice(-2);
+        const dat = ("0" + layerDate.getDate()).slice(-2);
+        this.props.getGsMapMatch(`${layerDate.getFullYear()}/${mon}/${dat}`);
+        this.props.getSSTMatch(`${layerDate.getFullYear()}/${mon}/${dat}`);
+        //this.props.getDamData();
+        this.props.getRainfall(formatDate(date, time));
+    }
+    updateDataByTime = (time) => {
+        const { date } = this.props;
+        this.props.updateTime(time);
+        const layerDate = new Date(date);
+        const mon = ("0" + (layerDate.getMonth() + 1)).slice(-2);
+        const dat = ("0" + layerDate.getDate()).slice(-2);
+        this.props.getGsMapMatch(`${layerDate.getFullYear()}/${mon}/${dat}`);
+        this.props.getSSTMatch(`${layerDate.getFullYear()}/${mon}/${dat}`);
+        //this.props.getDamData();
+        this.props.getRainfall(formatDate(date, time));
+    }
+
     componentDidMount() {
         loadGeoTiff();
-        this.props.getTeleStationData();
+        const { date, time } = this.props;
+        //this.props.getTeleStationData();
         this.props.getClipMask();
-        this.props.getDamData();
-        this.props.getRainfall('2017-08-02', '07:00');
-        this.props.getDailyDamByType('large');
+        this.props.getGsMapMatch('2016/08/02');
+        this.props.getSSTMatch('2016/08/02');
+        //this.props.getDamData();
+        this.props.getLatestWaterLevel();
+        this.props.getRainfall(formatDate(date, time));
+        //this.props.getDailyDamByType('large');
         const data = {
             query: "select * from ca_views2.ca_views2.view_dam_daily  AS tbl1  JOIN hive.dam as tbl2 ON tbl1.dam_id=tbl2.dam_id where tbl1.dam_date = '2017-01-01' limit 1000",
             queryType: 'SQL'
@@ -143,8 +176,8 @@ class Home extends Component {
             queryType: 'SQL'
         }
 
-        this.props.getHbaseData(data, 'MAP');
-        this.props.getHbaseData(compData, 'CHART');
+        //this.props.getHbaseData(data, 'MAP');
+        //this.props.getHbaseData(compData, 'CHART');
         this.props.getThaiBoundary();
 
         L.Icon.Default.mergeOptions({
@@ -152,56 +185,13 @@ class Home extends Component {
             iconUrl: require('leaflet/dist/images/marker-icon.png'),
             shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
         });
-        // Marker icon for the map. Can be customized and probably better to put it in own file and import here.
-        var redIcon = L.icon({
-        iconUrl: 'https://thumb.ibb.co/goPTbR/marker1.png',
-        //shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-
-        iconSize:     [45, 45], // size of the icon
-        //shadowSize:   [5, 24], // size of the shadow
-        iconAnchor:   [14, 24], // point of the icon which will correspond to marker's location
-        //shadowAnchor: [50, 90],  // the same for the shadow
-        popupAnchor:  [-2, -40] // point from which the popup should open relative to the iconAnchor
-        });
-
-        var greenIcon = L.icon({
-        iconUrl: 'https://thumb.ibb.co/goPTbR/marker1.png',
-        //shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-
-        iconSize:     [30, 30], // size of the icon
-        //shadowSize:   [5, 24], // size of the shadow
-        iconAnchor:   [10, 30], // point of the icon which will correspond to marker's location
-        //shadowAnchor: [17, 42],  // the same for the shadow
-        popupAnchor:  [-2, -40] // point from which the popup should open relative to the iconAnchor
-        });
-
-        var blueIcon = L.icon({
-        iconUrl: 'https://thumb.ibb.co/goPTbR/marker1.png',
-        //shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-
-        iconSize:     [55, 55], // size of the icon
-        //shadowSize:   [50, 64], // size of the shadow
-        iconAnchor:   [12, 60], // point of the icon which will correspond to marker's location
-        //shadowAnchor: [4, 62],  // the same for the shadow
-        popupAnchor:  [-4, -70] // point from which the popup should open relative to the iconAnchor
-        });
- 
-
         if (this.refs.map) {
             window.map = this.refs.map.leafletElement;
             window.map.on('overlayadd', this.onOverlayAdd);
             window.map.addControl(new L.Control.Fullscreen());
-            // L.marker([13.736717, 100.523186], {icon: blueIcon}).addTo(map);
-            // L.marker([12.916890, 99.630002], {icon: greenIcon}).addTo(map);
-            // L.marker([14.836872, 99.664638], {icon: redIcon}).addTo(map);
         }
     }
-    onOverlayAdd = (e) => {
-        if (e.name != 'BOUNDARY')
-            this.setState({
-                selectedLayer: e.name
-            });
-    }
+
     render() {
         const teleStationStyle = {
             "color": "#ff7800",
@@ -215,62 +205,46 @@ class Home extends Component {
         };
 
         const { url, sstUrl } = this.state;
-        const { teleStationData, damData, hBaseDamData, thaiBoundaryData, rainFall, dailyDam , clipMask } = this.props;
-        const center = [51.505, -0.09]
-        const rectangle = [[51.49, -0.08], [51.5, -0.06]]
-        let dates = [];
-        dates = this.getDatesForMapData();
-
-
+        const { teleStationData, damData, hBaseDamData, thaiBoundaryData,
+            rainFall, dailyDam, clipMask, mapLayer, date, time, latestWaterLevel } = this.props;
+        const center = [51.505, -0.09];
+        const rectangle = [[51.49, -0.08], [51.5, -0.06]];
         return (
             <div className="row">
-                <section className="col-lg-12 connectedSortable ui-sortable" >
-                    
+                <section className="col-lg-12" >
+                    <div className="">
+                        <div className="" >
                             <Map id="map" className="map-wrapper" ref="map" center={[13.736717, 100.523186]} zoom={6}>
                                 <TileLayer
                                     attribution=''
                                     url='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                                 />
-                                <LayersControl position="topright">
-                                    <Overlay name="Telestation">
-                                        {teleStationData.size != 0 ? <GeoJSON data={teleStationData} style={teleStationStyle} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                    </Overlay>
-                                    <Overlay  name="GsMAP">
-                                        {clipMask.size != 0 ? <LeafletGeoTiff clipMask={clipMask} url={url} /> : null}
-                                    </Overlay>
-                                    <Overlay addOverlay={this.addOverlay} name="SST">
-                                        {clipMask.size != 0 ? <LeafletGeoTiff clipMask={clipMask} url={sstUrl} /> : null}
-                                    </Overlay>
-                                    <Overlay name="RAINFALL">
-                                        {rainFall.size != 0 ? <GeoJSON style={teleStationStyle} data={rainFall} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                    </Overlay>
-                                    <Overlay name="DAILY DAM">
-                                        {dailyDam.size != 0 ? <GeoJSON style={teleStationStyle} data={dailyDam} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                    </Overlay>
-                                    <Overlay checked name="BOUNDARY">
-                                        {thaiBoundaryData.size != 0 ? <GeoJSON data={thaiBoundaryData} style={style} onEachFeature={onEachFeature.bind(null, this)} /> : null}
-                                    </Overlay>
-                                    <Overlay name="DAM">
-                                        {damData.size != 0 ? <GeoJSON data={damData} style={damStyle} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                    </Overlay>
-                                    <Overlay name="Hbase Dam">
-                                        {hBaseDamData.size != 0 ? <HbaseMapLayer data={hBaseDamData} /> : null}
-                                    </Overlay>
-                                </LayersControl>
-                                {/*  naviget*/}
-                                {/* <LegendControl position='bottomleft'>
+                                {clipMask.size != 0 && mapLayer == "GSMAP" && url != '' ? <LeafletGeoTiff clipMask={clipMask} url={url} /> : null}
+                                {clipMask.size != 0 && mapLayer == "SST" && sstUrl != '' ? <LeafletGeoTiff clipMask={clipMask} url={sstUrl} /> : null}
+                                {rainFall.size != 0 && (mapLayer == "RAINFALL" || mapLayer == "BOUNDARY" ) ? <GeoJSON style={teleStationStyle} data={rainFall} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
+                                {dailyDam.size != 0 && mapLayer == "DAILYDAM" ? <GeoJSON style={teleStationStyle} data={dailyDam} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
+                                {latestWaterLevel.size != 0 && ( mapLayer == "WATERLEVEL" || mapLayer == "BOUNDARY" ) ? <GeoJSON style={teleStationStyle} data={latestWaterLevel} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
+                                {teleStationData.size != 0 && mapLayer == "TELESTATION" ? <GeoJSON data={teleStationData} style={teleStationStyle} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
+                                {thaiBoundaryData.size != 0 && mapLayer == "BOUNDARY" ? <GeoJSON data={thaiBoundaryData} style={style} onEachFeature={onEachFeature.bind(null, this)} /> : null}
+                                {hBaseDamData.size != 0 && mapLayer == "HBASEDAM" ? <HbaseMapLayer data={hBaseDamData} /> : null}
+                                {damData.size != 0 && mapLayer == "DAM" ? <GeoJSON data={damData} style={damStyle} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
+                                <LegendControl position='bottomleft'>
                                     <div className="scrollmenu">
                                         <TimeScroll updateMapImage={this.updateImage} />
                                     </div>
-                                </LegendControl> */}
-                                {/* <LegendControl position='topleft'>
-                                    <DateRangePicker onChange={this.onDateChange} hintText="DD/MM/YY" />
-                                    {/* <DatePicker onChange={this.onDateChange} hintText="Select date" /> */}
-                                {/* </LegendControl> */}
+                                </LegendControl>
+                                <LegendControl position='topleft'>
+                                    <DateRangePicker date={date} time={time} updateDate={(date) => this.updateDataByDate(date)} updateTime={(time) => this.updateDataByTime(time)} onChange={this.onDateChange} hintText="DD/MM/YY" />
+
+                                </LegendControl>
                             </Map>
 
-                   
+                        </div>
+                    </div>
                 </section>
+
+
+
             </div>
 
 
@@ -294,7 +268,11 @@ const mapStateToProps = ({ mapData }) => ({
     thaiBoundaryData: mapData.get('thaiBoundaryData'),
     rainFall: mapData.get('rainFall'),
     dailyDam: mapData.get('dailyDam'),
-    clipMask: mapData.get('clipMask')
+    clipMask: mapData.get('clipMask'),
+    mapLayer: mapData.get('mapLayer'),
+    date: mapData.get('date'),
+    time: mapData.get('time'),
+    latestWaterLevel: mapData.get('latestWaterLevel')
 
 });
 
@@ -306,7 +284,12 @@ function mapDispatchToProps(dispatch) {
         getThaiBoundary: bindActionCreators(getThaiBoundary, dispatch),
         getRainfall: bindActionCreators(getRainfall, dispatch),
         getDailyDamByType: bindActionCreators(getDailyDamByType, dispatch),
-        getClipMask: bindActionCreators(getClipMask, dispatch)
+        getClipMask: bindActionCreators(getClipMask, dispatch),
+        updateDate: bindActionCreators(updateDate, dispatch),
+        updateTime: bindActionCreators(updateTime, dispatch),
+        getLatestWaterLevel: bindActionCreators(getLatestWaterLevel, dispatch),
+        getSSTMatch: bindActionCreators(getSSTMatch, dispatch),
+        getGsMapMatch: bindActionCreators(getGsMapMatch, dispatch)
     }
 }
 Home = connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,6 +1,5 @@
-export const RIGHT_LIST =
-     [
-    //    {
+export const RIGHT_LIST = [
+    // [{
     //     iconClassName: 'menu-icon fa fa-birthday-cake bg-red',
     //     header: 'menu 1'
     // },
@@ -33,5 +32,5 @@ export const RIGHT_LIST =
     //     iconClassName: 'menu-icon fa fa-file-code-o bg-green'
     // }
 
-     ]
+    ]
 

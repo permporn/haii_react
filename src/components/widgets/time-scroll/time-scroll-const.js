@@ -1,1 +1,1 @@
-export const DAYS_LIMIT = 30;
+export const DAYS_LIMIT = 5;

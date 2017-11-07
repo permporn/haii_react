@@ -10,7 +10,7 @@ class RightNavigation extends Component {
     render() {
         return (
             <div>
-                <RightNavigationMenu toggleRightNav={this.props.toggleRightNav} siteLayout={this.props.siteLayout} />
+                <RightNavigationMenu gsMapMatch={this.props.gsMapMatch} sstMapMatch={this.props.sstMapMatch} toggleRightNav={this.props.toggleRightNav} siteLayout={this.props.siteLayout} />
                 <RightMinNavigation toggleRightNav={this.props.toggleRightNav} siteLayout={this.props.siteLayout} />
             </div>
         );

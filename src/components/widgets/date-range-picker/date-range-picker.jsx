@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DatePicker from 'material-ui/DatePicker';
-import Toggle from 'material-ui/Toggle';
+import TimePicker from 'material-ui/TimePicker';
 import './date-range-picker.scss';
 
 const optionsStyle = {
@@ -9,51 +9,48 @@ const optionsStyle = {
 };
 
 class DateRangePicker extends Component {
+  static defaultProps = {
+    time: new Date("Aug 1, 2017 07:00"),
+    date: new Date("Aug 1, 2017")
+  }
   constructor(props) {
     super(props);
 
-    const minDate = new Date();
-    const maxDate = new Date();
-    minDate.setFullYear(minDate.getFullYear() - 1);
-    minDate.setHours(0, 0, 0, 0);
-    maxDate.setFullYear(maxDate.getFullYear() + 1);
-    maxDate.setHours(0, 0, 0, 0);
-
     this.state = {
-      minDate: minDate,
-      maxDate: maxDate,
       autoOk: false,
       disableYearSelection: false,
+      date: this.props.date,
+      time: this.props.time
     };
-  } 
-
-  handleChangeMinDate = (event, date) => {
+  }
+  onDateChange = (e, date) => {
     this.setState({
-      minDate: date,
-    });
-  };
-
-  handleChangeMaxDate = (event, date) => {
-    this.setState({
-      maxDate: date,
-    });
-  };
-
-/*   handleToggle = (event, toggled) => {
-    this.setState({
-      [event.target.name]: toggled,
-    });
-  }; */
+      date
+    })
+    this.props.updateDate(date);
+  }
+  handleTimeChange = (e, time) => {
+    this.props.updateTime(time);
+  }
 
   render() {
+    const { time, date } = this.state;
     return (
-    <div>
+      <div>
         <div style={optionsStyle}>
           <DatePicker
             onChange={this.onDateChange}
             autoOk={this.state.autoOk}
+            value={date}
             floatingLabelText="Select Date"
             disableYearSelection={this.state.disableYearSelection}
+          />
+          <TimePicker
+            format="24hr"
+            hintText="Select Time"
+            minutesStep={60}
+            value={time}
+            onChange={this.handleTimeChange}
           />
         </div>
       </div>

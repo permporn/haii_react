@@ -1,0 +1,64 @@
+{
+  "date": "2017-11-01T00:00:00.000+0000",
+  "average_percent_match": 80.0,
+  "match": [{
+    "sst": [{
+        "date": "2011-10-07T00:00:00.000+0000",
+        "percent_similarity": 100
+      },
+      {
+        "date": "2011-10-06T00:00:00.000+0000",
+        "percent_similarity": 90
+      },
+      {
+        "date": "2011-10-05T00:00:00.000+0000",
+        "percent_similarity": 90
+      },
+      {
+        "date": "2011-10-04T00:00:00.000+0000",
+        "percent_similarity": 80
+      },
+      {
+        "date": "2011-10-03T00:00:00.000+0000",
+        "percent_similarity": 70
+      },
+      {
+        "date": "2011-10-02T00:00:00.000+0000",
+        "percent_similarity": 80
+      },
+      {
+        "date": "2011-10-01T00:00:00.000+0000",
+        "percent_similarity": 50
+      }
+    ],
+    "gsmap": [{
+        "date": "2011-10-07T00:00:00.000+0000",
+        "percent_similarity": 100
+      },
+      {
+        "date": "2011-10-06T00:00:00.000+0000",
+        "percent_similarity": 90
+      },
+      {
+        "date": "2011-10-05T00:00:00.000+0000",
+        "percent_similarity": 90
+      },
+      {
+        "date": "2011-10-04T00:00:00.000+0000",
+        "percent_similarity": 80
+      },
+      {
+        "date": "2011-10-03T00:00:00.000+0000",
+        "percent_similarity": 70
+      },
+      {
+        "date": "2011-10-02T00:00:00.000+0000",
+        "percent_similarity": 80
+      },
+      {
+        "date": "2011-10-01T00:00:00.000+0000",
+        "percent_similarity": 50
+      }
+    ]
+  }]
+}

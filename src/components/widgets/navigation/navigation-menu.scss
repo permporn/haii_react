@@ -1,14 +1,4 @@
-$bg-main-menu : #0e47a1!important;
-$sidesubnav : #2459a9!important;
 
-$hightlight : #09c2f8;
-
-.right-menu-scroll {
-    background: $bg-main-menu;
-}
-.skin-dark-blue .sidebar-menu > li:hover > a, .skin-dark-blue .sidebar-menu > li.active > a {
-    background: $hightlight;
-}
 .sidesubnav {
     height: 100%;
     width: 0;
@@ -16,11 +6,10 @@ $hightlight : #09c2f8;
     z-index: 1;
     top: 0;
     left: 18.79%;
-    background-color: $sidesubnav;
+    background-color: #111;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
-    opacity: 0.9;
 }
 // for to hide hover admin lte effect main navigation
 @media (min-width: 768px){
@@ -37,7 +26,6 @@ $hightlight : #09c2f8;
     color: #818181;
     display: block;
     transition: 0.3s;
-    background: $sidesubnav;
 }
 
 .sidesubnav a:hover {
@@ -53,19 +41,18 @@ $hightlight : #09c2f8;
 }
 
 @media screen and (max-height: 450px) {
-  .sidesubnav {padding-top: 0px;}
+  .sidesubnav {padding-top: 15px;}
   .sidesubnav a {font-size: 18px;}
 }
 
 .open {
-    width: 250px;
+    width: 300px;
 }
 .close {
     width : 0;
 }
 .main-sidebar {
     transition: 0.1s;
-    background: $bg-main-menu;
 }
 .skin-blue .sidebar-menu >li > a  {
     text-decoration: none;
@@ -217,3 +204,29 @@ vertical-nav ul li ul li a:hover {
     background-color: #B4B9BD;
 } 
 
+table {
+    border-spacing: 1;
+    width: 100%;
+  }
+  
+  td {
+    padding: 2px 5px;
+  }
+  
+  .jsonOdd {
+    background: rgb(163, 184, 241);
+  }
+
+  .rowSelected {
+    background: #ffe;
+  }
+  .cellSelected {
+    background: #eef;
+  }
+  .headerSelected {
+    color: blue;
+  }
+
+  .textBig {
+      font-size: 2em;
+  }

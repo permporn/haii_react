@@ -63,6 +63,9 @@ export function loadGeoTiff() {
         request.onload = function() {
             if (this.status >= 200 && this.status < 400) {
                 self._parseTIFF(this.response);
+            }
+            else {
+                window.geoLayer && window.map.removeLayer(window.geoLayer);
             } //TODO else handle error
         };
         request.open("GET", url, true);

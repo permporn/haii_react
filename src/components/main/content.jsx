@@ -5,7 +5,8 @@ import NavigationMenu from 'widgets/navigation/navigation-menu';
 import RightNavigation from 'widgets/navigation/right-navigation/right-navigation';
 import HeaderBar from 'widgets/header/header-bar';
 import DateRangePicker from 'widgets/date-range-picker/date-range-picker';
-import { toggleRightNav , pushMainMenu } from 'actions/siteLayout.action';
+import { toggleRightNav , pushMainMenu  } from 'actions/siteLayout.action';
+import { updateMapLayer } from 'actions/map.action';
 import { bindActionCreators } from 'redux';
 import L from 'leaflet';
 
@@ -20,8 +21,8 @@ class Content extends Component {
         setTimeout(function(){ window.map.invalidateSize() }, 1000);
     }
     render() {
-        const { siteLayout } = this.props;
-        const mainClassName = classNames('skin-dark-blue sidebar-mini wysihtml5-supported',
+        const { siteLayout , updateMapLayer , gsMapMatch , sstMapMatch } = this.props;
+        const mainClassName = classNames('skin-blue sidebar-mini wysihtml5-supported',
          {'sidebar-collapse' : siteLayout.get('pushMainMenu') == true} ,
          { "control-sidebar-open" : siteLayout.get('showRightNav') == true }
       )
@@ -32,10 +33,10 @@ class Content extends Component {
             <div className={mainClassName}>
                 <div className="wrapper">
                     <HeaderBar pushMenu={this.pushMenu} />
-                    <NavigationMenu pushMainMenu={siteLayout.get('pushMainMenu')} />
-                    <RightNavigation toggleRightNav={this.props.toggleRightNav} siteLayout={this.props.siteLayout} />
+                    <NavigationMenu updateMapLayer={updateMapLayer} pushMainMenu={siteLayout.get('pushMainMenu')} />
+                    <RightNavigation gsMapMatch={gsMapMatch} sstMapMatch={sstMapMatch} toggleRightNav={this.props.toggleRightNav} siteLayout={this.props.siteLayout} />
                     <div className={contentWrapperClassName}>
-                        <section>
+                        <section className="content-header">
 
                             {/*<ol className="breadcrumb">
     								<li><a href="#"><i className="fa fa-dashboard"></i> Home</a></li>
@@ -68,14 +69,17 @@ Content.propTypes = {
     wrapClassName: PropTypes.string
 };
 
-const mapStateToProps = ({ siteLayout }) => ({
-    siteLayout: siteLayout
+const mapStateToProps = ({ siteLayout , mapData }) => ({
+    siteLayout: siteLayout ,
+    gsMapMatch: mapData.get('gsMapMatch'),
+    sstMapMatch: mapData.get('sstMapMatch')
 });
 
 function mapDispatchToProps(dispatch) {
     return {
         toggleRightNav: bindActionCreators(toggleRightNav, dispatch),
-        pushMainMenu: bindActionCreators(pushMainMenu,dispatch)
+        pushMainMenu: bindActionCreators(pushMainMenu,dispatch),
+        updateMapLayer: bindActionCreators(updateMapLayer,dispatch)
     }
 }
 Content = connect(mapStateToProps, mapDispatchToProps)(Content);
