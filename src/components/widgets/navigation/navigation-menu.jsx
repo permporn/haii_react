@@ -47,18 +47,18 @@ class NavigationMenu extends Component {
             display: "block"
         };
 
-        var items = [
-            { average_percent_match: 80.0,date: "2014-10-07" },
-            { average_percent_match: 70.0,date: "2015-11-11" },
-            { average_percent_match: 60.0,date: "2012-09-01" },
-            { average_percent_match: 50.0,date: "2014-09-02" }
-          ];
+        // var items = [
+        //     { average_percent_match: 80.0,date: "2014-10-07" },
+        //     { average_percent_match: 70.0,date: "2015-11-11" },
+        //     { average_percent_match: 60.0,date: "2012-09-01" },
+        //     { average_percent_match: 50.0,date: "2014-09-02" }
+        //   ];
         
-        var columns = [
-            {key: 'average_percent_match', label: ' ', cell: function( item, columnKey ){
-                return <span><span className="textBig">{ item.average_percent_match }%</span> { item.date }</span>;
-            }}
-        ];
+        // var columns = [
+        //     {key: 'average_percent_match', label: ' ', cell: function( item, columnKey ){
+        //         return <span><span className="textBig">{ item.average_percent_match }%</span> { item.date }</span>;
+        //     }}
+        // ];
 
         var SelectTable = React.createClass({
             getInitialState: function(){
@@ -159,8 +159,6 @@ class NavigationMenu extends Component {
                                     )
                                 })
                             }
-
-
                         </ul>
                     </section>
 
@@ -173,16 +171,9 @@ class NavigationMenu extends Component {
                                 })
                             }
                         </ul>
-                        <JsonTable rows={ items } columns={ columns } />
+                        {/* <JsonTable rows={ items } columns={ columns } /> */}
                     </div>
-
-
-
-
-
-
                 </aside>
-
             </div>
         );
     }

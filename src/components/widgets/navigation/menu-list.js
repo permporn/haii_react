@@ -35,16 +35,20 @@ export const MENU_LIST =
         iconClassName: 'ti-cloud pad-right',
         children: [
             {
-                name: 'GSMAP match',
+                name: '80.0%  2014-10-07',
                 layer: 'GSMAPMATCH'
             },
             {
-                name: 'SST match',
+                name: '70.0%  2015-11-11',
                 layer: 'SSTMATCH',
             },
             {
-                name: 'Combined match',
+                name: '60.0%  2012-09-01',
                 layer: 'COMBINEDMATCH',
+            },
+            {
+                name: '50.0%  2012-09-02',
+                layer: 'COMBINEDMATCH2',
             }
         ]
     }
