@@ -41,7 +41,7 @@ class RightNavigationMenu extends Component {
                         </div>
                     </div>
                 </div>
-                <ul className="nav nav-tabs nav-justified control-sidebar-tabs">
+                {/* <ul className="nav nav-tabs nav-justified control-sidebar-tabs">
                     <li onClick={() => this.changeTab('GRAPHS')} className={classNames({ "active": selectedTab == 'GRAPHS' })}><a ><span className="fa fa-th-list"></span></a></li>
                     <li className={classNames({ "active": selectedTab == 'ALERTS' })} ><a onClick={() => this.changeTab('ALERTS')}><i className="fa fa-bell-o"></i></a></li>
                 </ul>
@@ -54,7 +54,7 @@ class RightNavigationMenu extends Component {
                     </div>
 
 
-                </div>
+                </div> */}
             </aside> : null
         );
     }

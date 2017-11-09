@@ -233,10 +233,10 @@ class Home extends Component {
                                         <TimeScroll updateMapImage={this.updateImage} />
                                     </div>
                                 </LegendControl>
-                                <LegendControl position='topleft'>
+                                {/* <LegendControl position='topleft'>
                                     <DateRangePicker date={date} time={time} updateDate={(date) => this.updateDataByDate(date)} updateTime={(time) => this.updateDataByTime(time)} onChange={this.onDateChange} hintText="DD/MM/YY" />
 
-                                </LegendControl>
+                                </LegendControl> */}
                             </Map>
 
                         </div>
