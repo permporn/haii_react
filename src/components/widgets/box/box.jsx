@@ -25,7 +25,7 @@ class Box extends Component {
     // render method of Class
     render() {
         const { collapsed } = this.state;
-        const { showMaximizeIcon, key } = this.props;
+        const { showMaximizeIcon, key , boxSecondaryTitle } = this.props;
         const boxClassName = classNames("box-body", { "box-close": collapsed == true });
         const iconClassName = classNames({ "fa fa-plus": collapsed == true },
             { "fa fa-minus": collapsed == false }
@@ -34,6 +34,7 @@ class Box extends Component {
             <div key={key} className="box box-default">
                 <div className="box-header with-border">
                     <h3 className="box-title">{this.props.boxTitle}</h3>
+                    <p> {boxSecondaryTitle} </p>
                     <div className="box-tools pull-right">
                         {showMaximizeIcon == true ? <span onClick={this.props.showCompleteView} className="btn btn-box-tool" ><i className="fa fa-th-large"></i>
                         </span> : null}

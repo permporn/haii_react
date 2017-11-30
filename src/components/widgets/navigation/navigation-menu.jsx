@@ -4,7 +4,27 @@ import './navigation-menu.scss';
 import Bars from 'react-icons/lib/fa/bars';
 import classNames from 'classnames';
 import { MENU_LIST } from './menu-list';
-import JsonTable from 'react-json-table';
+import Charts from 'widgets/charts/charts';
+import Graphs from 'widgets/graphs/graphs';
+import DatePicker from 'material-ui/DatePicker';
+import moment from 'moment';
+import Checkbox from 'material-ui/Checkbox';
+import CheckedIcon from 'material-ui/svg-icons/toggle/check-box';
+import UncheckedIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
+
+const styles = {
+    block: {
+        maxWidth: 250,
+    },
+    checkbox: {
+        padding: 8,
+        paddingLeft: 55,
+        paddingRight: 37
+    },
+    labelStyle: {
+        color: '#ffffff'
+    }
+};
 
 class NavigationMenu extends Component {
 
@@ -14,122 +34,112 @@ class NavigationMenu extends Component {
         this.state = {
             showSubNav: false,
             subMenuItems: [],
-            menuHeaderId: ''
+            menuHeaderId: '',
+            showContextualMenu: false,
+            autoOk: false,
+            disableYearSelection: false,
+            contextualLayer: ''
         }
 
     }
     closeSubNav = () => {
         this.setState({
-            showSubNav: false
+            showContextualMenu: false
         })
     }
     showSubNav = (menu) => {
-        this.setState({
-            showSubNav: true,
-            subMenuItems: menu.children,
-            menuHeaderId: menu.id
-        })
-    }
-    redirectToLink = (menu) => {
-        this.setState({
-            showSubNav: false,
-            menuHeaderId: menu.id
-        })
-    }
-    onSubMenuClicked = (item) => {
-        if(item.layer)
-        this.props.updateMapLayer(item.layer);
-    }
+        this.props.updateMapType(menu.type);
+        if (menu.id != this.state.menuHeaderId) {
+            this.setState({
+                showSubNav: true,
+                subMenuItems: menu.children,
+                menuHeaderId: menu.id,
+                showContextualMenu: false
+            })
+        }
+        else {
+            this.setState({
+                showSubNav: !this.state.showSubNav,
+                subMenuItems: menu.children,
+                menuHeaderId: menu.id,
+                showContextualMenu: false
+            })
+        }
 
+    }
+    showContextual = (menu) => {
+        this.props.updateMapType(menu.type);
+        this.setState({
+            showContextualMenu: menu.showContextualMenu,
+            menuHeaderId: menu.id,
+            contextualLayer: menu.layer
+        })
+        if (menu.layer == "FORECAST_LAYER")
+            this.props.updateMapLayer("FORECAST_LAYER");
+    }
+    onForeCastDateChange = (date) => {
+        this.setState({
+            showContextualMenu: true
+        })
+        this.props.updateMapLayer("FORECAST_LAYER");
+    }
+    onSubMenuClicked = (item, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (item.layer)
+            this.props.updateMapLayer(item.layer, true);
+        if (item.showContextualMenu)
+            this.setState({
+                showContextualMenu: true,
+                contextualLayer: item.layer
+            })
+        else {
+            this.setState({
+                showContextualMenu: false
+            })
+        }
+    }
+    onListClick = (e, item, mapLayer) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (mapLayer.findIndex((layer) => layer == item.layer) > -1){
+            this.props.updateMapLayer(item.layer, false);
+            this.setState({
+                showContextualMenu: false
+            })
+        }
+        else {
+            this.props.updateMapLayer(item.layer, true);
+            if (item.showContextualMenu)
+                this.setState({
+                    showContextualMenu: true,
+                    contextualLayer: item.layer
+                })
+            else {
+                this.setState({
+                    showContextualMenu: false
+                })
+            }
+        }
+
+    }
+    onSubMenuChecked = (item, e, isChecked) => {
+        this.props.updateMapLayer(item.layer, isChecked);
+    }
     // render method of Class
     render() {
         var style = {
             display: "block"
         };
-
-        // var items = [
-        //     { average_percent_match: 80.0,date: "2014-10-07" },
-        //     { average_percent_match: 70.0,date: "2015-11-11" },
-        //     { average_percent_match: 60.0,date: "2012-09-01" },
-        //     { average_percent_match: 50.0,date: "2014-09-02" }
-        //   ];
-        
-        // var columns = [
-        //     {key: 'average_percent_match', label: ' ', cell: function( item, columnKey ){
-        //         return <span><span className="textBig">{ item.average_percent_match }%</span> { item.date }</span>;
-        //     }}
-        // ];
-
-        var SelectTable = React.createClass({
-            getInitialState: function(){
-              // We will store the selected cell and row, also the sorted column
-              return {row: false, cell: false, sort: false};
-            },  
-            render: function(){
-              var me = this,
-                  // clone the rows
-                  items = this.props.rows.slice()
-              ;
-              // Sort the table
-              if( this.state.sort ){
-                items.sort( function( a, b ){
-                   return a[ me.state.sort ] > b[ me.state.sort ] ? 1 : -1;
-                });
-              }
-                  
-              return <JsonTable 
-                rows={items} 
-                columns={ columns }
-                settings={ this.getSettings() } 
-                onClickCell={ this.onClickCell }
-                onClickHeader={ this.onClickHeader }
-                onClickRow={ this.onClickRow } />;
-            },
-            
-            getSettings: function(){
-                var me = this;
-                // We will add some classes to the selected rows and cells
-                return {
-                  keyField: 'average_percent_match',
-                  cellClass: function( current, key, item){
-                    if( me.state.cell == key && me.state.row == item.name )
-                      return current + ' cellSelected';
-                    return current;
-                  },
-                  headerClass: function( current, key ){
-                      if( me.state.sort == key )
-                        return current + ' headerSelected';
-                      return current;
-                  },
-                  rowClass: function( current, item ){
-                    if( me.state.row == item.name )
-                      return current + ' rowSelected';
-                    return current;
-                  }
-                };
-            },
-            
-            onClickCell: function( e, column, item ){
-              this.setState( {cell: column} );
-            },
-            
-            onClickHeader: function( e, column ){
-              this.setState( {sort: column} );
-            },
-            
-            onClickRow: function( e, item ){
-              this.setState( {row: item.name} );
-            }  
-          });
-
-        const { pushMainMenu } = this.props;
+        const { pushMainMenu, mapType, mapLayer } = this.props;
         const { history } = this.context;
-        const { showSubNav, subMenuItems, menuHeaderId } = this.state;
-        const subNavClassName = classNames('sidesubnav', {
-            'open': showSubNav == true
+        const { showSubNav, subMenuItems, menuHeaderId, showContextualMenu, contextualLayer } = this.state;
+        const contextualMenuClassName = classNames('sidesubnav', {
+            'open': showContextualMenu == true
         },
-            { 'close': showSubNav == false },
+            { 'close': showContextualMenu == false },
             { 'small-subnav': pushMainMenu == true })
+
         return (
             <div>
                 <aside className="main-sidebar">
@@ -142,38 +152,85 @@ class NavigationMenu extends Component {
                         {/* /.search form */}
                         {/* sidebar menu: : style can be found in sidebar.less */}
                         <ul className="sidebar-menu">
-                            <li className="header">View</li>
                             {
                                 MENU_LIST.map((menu, index) => {
-                                    const menuClassName = classNames('treeview', { 'active': menuHeaderId == menu.id })
+                                    const menuClassName = classNames('treeview', { 'active': (menuHeaderId == menu.id && showSubNav == true) })
+                                    const mainMenuIconClassName = classNames('pull-right', { "fa fa-angle-up": showSubNav == true && menuHeaderId == menu.id }, {
+                                        "fa fa-angle-down": menuHeaderId != menu.id || showSubNav == false
+                                    }
+                                    )
                                     return (
-                                        <li onClick={menu.children ? () => this.showSubNav(menu) : () => this.redirectToLink(menu)} className={menuClassName}>
+                                        <li onClick={menu.children ? () => this.showSubNav(menu) : () => this.showContextual(menu)} className={menuClassName}>
                                             <a href="#" data-toggle="tooltip" data-placement="right" title={pushMainMenu == true ? menu.header : null}>
                                                 <i className={menu.iconClassName}>{menu.iconValue}</i>
                                                 <span>
                                                     {menu.header}
                                                 </span>
-                                                <i className="fa fa-angle-right pull-right"></i>
+                                                <i className={mainMenuIconClassName}></i>
                                             </a>
+                                            <ul className="treeview-menu custom-sub" >
+                                                {menu.children && menu.children.map((item, index) => {
+                                                    return (
+                                                        menu.type == "MONITORING" ?
+                                                            <li key={index} onClick={(e) => { this.onListClick(e, item, mapLayer) }} >
+                                                                <Checkbox
+                                                                    style={styles.checkbox}
+                                                                    label={item.name}
+                                                                    key={index}
+                                                                    checkedIcon={<CheckedIcon style={{ fill: '#42A5F5' }}/>}
+                                                                    uncheckedIcon={<UncheckedIcon  style={{ fill: 'white' }} />}
+                                                                    checked={mapLayer.findIndex((layer) => layer == item.layer) > -1}
+                                                                    labelPosition="left"
+                                                                    labelStyle={styles.labelStyle}
+                                                                /> </li> : <li onClick={(e) => { this.onSubMenuClicked(item, e) }} > <p className="custom-subitem" >{item.name}</p>
+                                                            </li>)
+                                                })}
+                                            </ul>
                                         </li>
                                     )
                                 })
                             }
+
+
                         </ul>
                     </section>
 
-                    <div id="mySidenav" className={subNavClassName}>
+                    <div id="mySidenav" className={contextualMenuClassName}>
                         <a href="javascript:void(0)" className="closebtn" onClick={this.closeSubNav}>&times; </a>
                         <ul className="vertical-nav">
-                            {
-                                subMenuItems && subMenuItems.map((item, index) => {
-                                    return (<li onClick={()=> {this.onSubMenuClicked(item)}} ><a> {item.name} </a></li>)
-                                })
-                            }
+                            <Charts mapType={mapType} />
+                            <Graphs contextualLayer={contextualLayer} />
                         </ul>
-                        {/* <JsonTable rows={ items } columns={ columns } /> */}
                     </div>
+
+
+                    <div className="site-user">
+                        <div className="media align-items-center">
+                            <a href="#"><img className="avatar avatar-circle" src="http://www.urbanui.com/titan/images/faces/face9.jpg" /></a>
+                            <div className="media-body hidden-fold">
+                                <h6 className="username"><a href="#">Username</a></h6>
+
+                                <div className="dropup"><a href="javascript:void(0)" className="dropdown-toggle usertitle" data-toggle="dropdown" aria-expanded="false">
+                                    <small>Settings</small> <i className="fa fa-angle-up"></i></a>
+                                    <ul className="dropdown-menu" role="menu">
+                                        <li><a href="#"><i className="ti-power-off"></i> Logout</a></li>
+                                        <li><a href="#"><i className="ti-settings"></i> Settings</a></li>
+                                        <li><a href="#"><i className="ti-announcement"></i> News</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#"><i className="ti-help-alt"></i> Help</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
                 </aside>
+
             </div>
         );
     }

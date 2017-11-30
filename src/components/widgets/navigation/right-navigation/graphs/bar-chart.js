@@ -7,7 +7,7 @@ const bar_data = {
     datasets: [
         {
             label: 'Rain Fall',
-            backgroundColor: 'rgba(61,145,241,0.2)',
+            backgroundColor: 'rgba(10,61,173,0.9)',
             borderColor: 'rgba(61,145,241,1)',
             borderWidth: 1,
             hoverBackgroundColor: 'rgba(61,145,241,0.4)',

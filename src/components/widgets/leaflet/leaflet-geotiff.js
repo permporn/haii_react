@@ -6,7 +6,7 @@ let size;
 
 export function loadGeoTiff() {
     L.LeafletGeotiff = L.ImageOverlay.extend({
-    initialize: function (url, options) { 
+    initialize: function (url, options) {
         if(typeof(plotty)=='undefined'){
             throw new Error("plotty not defined");
         };
@@ -18,19 +18,19 @@ export function loadGeoTiff() {
         this.raster = {};
         if (options.bounds) {
             this._rasterBounds = L.latLngBounds(options.bounds);
-        } 
+        }
         L.Util.setOptions(this, options);
-        
+
         this.options.colorScale = (options.colorScale==undefined) ? 'viridis' : options.colorScale;
         this.options.clampLow = (options.clampLow==undefined) ? true : options.clampLow;
         this.options.clampHigh = (options.clampHigh==undefined) ? true : options.clampHigh;
         this.options.arrowSize = (options.arrowSize==undefined) ? 20 : options.arrowSize;
-        
+
         this._preLoadColorScale(); //Make sure colorScale is ready even if image takes a while to load
         this._getData(url);
     },
-    setURL: function(newURL) {
-        this._getData(newURL);
+    setURL: function(newURL,handleTiffError) {
+        this._getData(newURL,handleTiffError);
     },
     onAdd: function (map) {
         this._map = map;
@@ -41,7 +41,7 @@ export function loadGeoTiff() {
         map._panes.overlayPane.appendChild(this._image);
 
         map.on('moveend', this._reset, this);
-        
+
         if (map.options.zoomAnimation && L.Browser.any3d) {
             map.on('zoomanim', this._animateZoom, this);
         }
@@ -57,24 +57,25 @@ export function loadGeoTiff() {
             map.off('zoomanim', this._animateZoom, this);
         }
     },
-    _getData: function(url) {
+    _getData: function(url,handleTiffError) {
         var self = this;
-        var request = new XMLHttpRequest();  
+        var request = new XMLHttpRequest();
         request.onload = function() {
             if (this.status >= 200 && this.status < 400) {
                 self._parseTIFF(this.response);
             }
             else {
-                window.geoLayer && window.map.removeLayer(window.geoLayer);
-            } //TODO else handle error
+                handleTiffError && handleTiffError();
+            }
         };
         request.open("GET", url, true);
         request.responseType = "arraybuffer";
+        request.setRequestHeader("Authorization", `Bearer ${window.localStorage.getItem('token')}` )
         request.send();
     },
     _parseTIFF: function (arrayBuffer) {
         this.tiff = GeoTIFF.parse(arrayBuffer);
-        
+
         if (typeof(this.options.image)=='undefined') {
             this.options.image = 0;
         }
@@ -82,7 +83,7 @@ export function loadGeoTiff() {
             this.options.band = 0;
         }
         this.setBand(this.options.band);
-  
+
         if (!this.options.bounds) {
             var image = this.tiff.getImage(this.options.image);
             var meta = image.getFileDirectory();
@@ -96,12 +97,12 @@ export function loadGeoTiff() {
     },
     setBand: function (band) {
         this.options.band = band
-        
+
         var image = this.tiff.getImage(this.options.image);
         this.raster.data = image.readRasters({samples: [band]})[0];
         this.raster.width = image.getWidth();
         this.raster.height = image.getHeight();
-        
+
         this._reset()
     },
     getRasterArray: function () {
@@ -124,8 +125,8 @@ export function loadGeoTiff() {
     },
     getValueAtLatLng: function (lat, lng) {
         try {
-            var x = Math.floor(this.raster.width*(lng - this._rasterBounds._southWest.lng)/(this._rasterBounds._northEast.lng - this._rasterBounds._southWest.lng)); 
-            var y = this.raster.height-Math.ceil(this.raster.height*(lat - this._rasterBounds._southWest.lat)/(this._rasterBounds._northEast.lat - this._rasterBounds._southWest.lat)); 
+            var x = Math.floor(this.raster.width*(lng - this._rasterBounds._southWest.lng)/(this._rasterBounds._northEast.lng - this._rasterBounds._southWest.lng));
+            var y = this.raster.height-Math.ceil(this.raster.height*(lat - this._rasterBounds._southWest.lat)/(this._rasterBounds._northEast.lat - this._rasterBounds._southWest.lat));
             var i = y*this.raster.width+x
             return this.raster.data[i];
         }
@@ -164,15 +165,18 @@ export function loadGeoTiff() {
     },
     _preLoadColorScale: function () {
         var canvas = document.createElement('canvas');
+        plotty.addColorScale("mycolorscale", ['rgba(255, 255, 255, 0)', '#97e5aa', '#6ac904', '#f8d700', '#ff8b05', '#cc6601', '#ff2e07', '#c00000'], [0, 0.1, 0.13, 0.23, 0.33, 0.47, 0.6, 1]);
         var plot = new plotty.plot({
             canvas: canvas, data: [0],
             width: 1, height: 1,
-            domain: [this.options.displayMin, this.options.displayMax], 
+            domain: [this.options.displayMin, this.options.displayMax],
             colorScale: this.options.colorScale,
             clampLow: this.options.clampLow,
             clampHigh: this.options.clampHigh,
         });
-        this.colorScaleData = plot.colorScaleCanvas.toDataURL();            
+
+
+        this.colorScaleData = plot.colorScaleCanvas.toDataURL();
     },
     setClip: function(clipLatLngs) {
         this.options.clip = clipLatLngs;
@@ -204,7 +208,7 @@ export function loadGeoTiff() {
             var yFinish = (rasterPixelBounds.max.y<size.y ? rasterPixelBounds.max.y : size.y);
             var plotWidth = xFinish-xStart;
             var plotHeight = yFinish-yStart;
-            
+
             if ((plotWidth<=0) || (plotHeight<=0)) {
                 console.log(this.options.name,' is off screen.');
                 var plotCanvas = document.createElement("canvas");
@@ -232,7 +236,7 @@ export function loadGeoTiff() {
                 var arrowSize = this.options.arrowSize;
                 var zoom = this._map.getZoom();
                 var gridPxelSize = (rasterPixelBounds.max.x - rasterPixelBounds.min.x) / self.raster.width;
-                var stride = Math.max(1,Math.floor(1.2*arrowSize/gridPxelSize)); 
+                var stride = Math.max(1,Math.floor(1.2*arrowSize/gridPxelSize));
 
                 for (var y=0;y<self.raster.height;y=y+stride) {
                     for (var x=0;x<self.raster.width;x=x+stride) {
@@ -241,7 +245,7 @@ export function loadGeoTiff() {
                             //calculate lat-lon of of this point
                             var currentLng = this._rasterBounds._southWest.lng + (x+0.5)*lngSpan;
                             var currentLat = this._rasterBounds._northEast.lat - (y+0.5)*latSpan;
-                                                    
+
                             //convert lat-lon to pixel cordinates
                             var projected = this._map.latLngToContainerPoint(L.latLng(currentLat,currentLng)); //If slow could unpack this calculation
                             var xProjected = projected.x;
@@ -267,17 +271,17 @@ export function loadGeoTiff() {
                 var plot = new plotty.plot({
                     data: self.raster.data,
                     width: self.raster.width, height: self.raster.height,
-                    domain: [self.options.displayMin, self.options.displayMax], 
+                    domain: [self.options.displayMin, self.options.displayMax],
                     colorScale: this.options.colorScale,
                     clampLow: this.options.clampLow,
                     clampHigh: this.options.clampHigh,
                     canvas: plottyCanvas,
                     useWebGL: false,
                 });
-                plot.setNoDataValue(-9999); 
+                plot.setNoDataValue(-9999);
                 plot.render();
 
-                this.colorScaleData = plot.colorScaleCanvas.toDataURL();            
+                this.colorScaleData = plot.colorScaleCanvas.toDataURL();
                 var rasterImageData = plottyCanvas.getContext("2d").getImageData(0,0,plottyCanvas.width, plottyCanvas.height);
 
                 //Create image data and Uint32 views of data to speed up copying
@@ -290,7 +294,7 @@ export function loadGeoTiff() {
                 var zoom = this._map.getZoom();
                 var scale = this._map.options.crs.scale(zoom);
                 var d = 57.29577951308232; //L.LatLng.RAD_TO_DEG;
-                
+
                 var transformationA = this._map.options.crs.transformation._a;
                 var transformationB = this._map.options.crs.transformation._b;
                 var transformationC = this._map.options.crs.transformation._c;
@@ -304,7 +308,7 @@ export function loadGeoTiff() {
                     var yUntransformed = ((yOrigin+y) / scale - transformationD) / transformationC;
                     var currentLat = (2 * Math.atan(Math.exp(yUntransformed)) - (Math.PI / 2)) * d;
                     var rasterY = this.raster.height-Math.ceil((currentLat - this._rasterBounds._southWest.lat)/latSpan);
-                    
+
                     for (var x=0;x<plotWidth;x++) {
                         //Location to draw to
                         var index = (y*plotWidth+x);
@@ -314,17 +318,17 @@ export function loadGeoTiff() {
                         //Used to deal with TIF being EPSG:4326 (lat,lon) and map being EPSG:3857 (m E,m N)
                         var xUntransformed = ((xOrigin+x) / scale - transformationB) / transformationA;
                         var currentLng = xUntransformed * d;
-                        var rasterX = Math.floor((currentLng - this._rasterBounds._southWest.lng)/lngSpan); 
+                        var rasterX = Math.floor((currentLng - this._rasterBounds._southWest.lng)/lngSpan);
 
                         var rasterIndex = (rasterY*this.raster.width+rasterX);
 
                         //Copy pixel value
                         outPixelsU32[index] = inPixelsU32[rasterIndex];
                     }
-                }    
-                ctx.putImageData(imageData, xStart, yStart); 
+                }
+                ctx.putImageData(imageData, xStart, yStart);
             }
-   
+
             //Draw clipping polygon
             if (this.options.clip) {
                 this._clipMaskToPixelPoints();
@@ -338,7 +342,7 @@ export function loadGeoTiff() {
                 ctx.closePath();
                 ctx.fill();
             }
-            
+
             this._image.src = String(plotCanvas.toDataURL());
         }
     },

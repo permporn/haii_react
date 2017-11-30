@@ -10,6 +10,7 @@ import Pie_Chart from '../../right-navigation/graphs/pie-chart';
 import Bar_Chart from '../../right-navigation/graphs/bar-chart';
 import { Pie } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
+import { BASE_URL_GSMAP , BASE_URL_SST } from 'widgets/map/url/map-image-url';
 import {
     Table,
     TableBody,
@@ -70,6 +71,9 @@ class Graphs extends Component {
 
         })
     }
+    updateGsMapMatch = (date) => {
+      
+    }
     // render method of Class
     render() {
         let pieData = [
@@ -78,10 +82,10 @@ class Graphs extends Component {
             { label: 'Dam 3', value: 25.0 }
         ];
         const { viewType, showCompleteView } = this.state;
-        const { gsMapMatch, sstMapMatch } = this.props;
+        const { gsMapMatch, sstMapMatch, mapLayer } = this.props;
         return (
             <div>
-                <div className="row">
+                {mapLayer == "GSMAPMATCH" ? <div className="row">
                     <div className="col-md-12">
                         <Paper style={{ padding: '20px' }} zDepth={2} >
                             GSMAP match
@@ -115,12 +119,12 @@ class Graphs extends Component {
                                                 let year = date.substring(0, 4);
                                                 let mon = date.substring(4, 6);
                                                 let dat = date.substring(6, 8);
-                                                return(<TableRow style={{ color: '#696969' }} >
+                                                return (<TableRow style={{ color: '#696969' }} >
                                                     <TableRowColumn colSpan={2} style={{
                                                         whiteSpace: 'normal',
                                                         wordWrap: 'break-word'
                                                     }}>{mon} {dat}</TableRowColumn>
-                                                    <TableRowColumn >...</TableRowColumn>
+                                                    <TableRowColumn  ><a onClick={() =>this.updateGsMapMatch(date)} href="#">...</a></TableRowColumn>
                                                 </TableRow>)
                                             }
 
@@ -139,8 +143,8 @@ class Graphs extends Component {
                             </Table>
                         </Paper>
                     </div>
-                </div>
-                <div className="row">
+                </div> : null}
+                {mapLayer == "SSTMATCH" ? <div className="row">
                     <div className="col-md-12">
                         <Paper style={{ padding: '20px' }} zDepth={2} >
                             SST match
@@ -167,24 +171,24 @@ class Graphs extends Component {
                                     showRowHover={this.state.showRowHover}
                                     stripedRows={this.state.stripedRows}
                                 >
-                                {
-                                    sstMapMatch.map((data, index) => {
-                                        let date = Object.keys(data)[0];
-                                        if (date) {
-                                            let year = date.substring(0, 4);
-                                            let mon = date.substring(4, 6);
-                                            let dat = date.substring(6, 8);
-                                            return(<TableRow style={{ color: '#696969' }} >
-                                                <TableRowColumn colSpan={2} style={{
-                                                    whiteSpace: 'normal',
-                                                    wordWrap: 'break-word'
-                                                }}>{mon} {dat}</TableRowColumn>
-                                                <TableRowColumn >...</TableRowColumn>
-                                            </TableRow>)
-                                        }
+                                    {
+                                        sstMapMatch.map((data, index) => {
+                                            let date = Object.keys(data)[0];
+                                            if (date) {
+                                                let year = date.substring(0, 4);
+                                                let mon = date.substring(4, 6);
+                                                let dat = date.substring(6, 8);
+                                                return (<TableRow style={{ color: '#696969' }} >
+                                                    <TableRowColumn colSpan={2} style={{
+                                                        whiteSpace: 'normal',
+                                                        wordWrap: 'break-word'
+                                                    }}>{mon} {dat}</TableRowColumn>
+                                                    <TableRowColumn >...</TableRowColumn>
+                                                </TableRow>)
+                                            }
 
-                                    })
-                                }
+                                        })
+                                    }
 
                                 </TableBody>
                                 <TableFooter>
@@ -197,8 +201,8 @@ class Graphs extends Component {
                             </Table>
                         </Paper>
                     </div>
-                </div>
-                <div className="row">
+                </div> : null}
+                {mapLayer == "COMBINEDMATCH" ? <div className="row">
                     <div className="col-md-12">
                         <Paper style={{ padding: '20px' }} zDepth={2} >
                             COMBINED match
@@ -247,7 +251,7 @@ class Graphs extends Component {
                             </Table>
                         </Paper>
                     </div>
-                </div>
+                </div> : null}
                 <div className="row">
                     <div className="col-md-12">
                         <Box key="RAIN_BOX" boxTitle="Rain fall" collapsed={false} showMaximizeIcon={true} showCompleteView={() => this.showCompleteView('LINE')} >

@@ -8,7 +8,8 @@ import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 export default class LegendControl extends MapControl {
 
     componentWillMount() {
-        const legend = L.control({ position: this.props.position });
+        let legend = this.props.position ? L.control({ position: this.props.position }) : L.control();
+        let className = this.props.customClass;
         const jsx = (
             <MuiThemeProvider muiTheme={getMuiTheme() }>
                 <div {...this.props}>
@@ -16,13 +17,11 @@ export default class LegendControl extends MapControl {
                 </div>
             </MuiThemeProvider>
         );
-
         legend.onAdd = function (map) {
-            let div = L.DomUtil.create('div', '');
+            let div = className ? L.DomUtil.create('div', className) :  L.DomUtil.create('div', '');
             ReactDOM.render(jsx, div);
             return div;
         };
-
         this.leafletElement = legend;
     }
 }

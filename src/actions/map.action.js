@@ -12,6 +12,11 @@ export const GET_LATEST_WATER_LEVEL = 'GET_LATEST_WATER_LEVEL';
 export const GET_SST_MATCH = 'GET_SST_MATCH';
 export const GET_GSMAP_MATCH = 'GET_GSMAP_MATCH';
 export const GET_COMBINED_MATCH = 'GET_COMBINED_MATCH';
+export const UPDATE_SST_MATCHURL = 'UPDATE_SST_MATCHURL';
+export const UPDATE_GSMAP_MATCHURL = 'UPDATE_GSMAP_MATCHURL';
+export const GET_RAINFALL_FORECAST = 'GET_RAINFALL_FORECAST';
+export const GET_BAISINS = 'GET_BAISINS';
+export const UPDATE_MAP_TYPE = 'UPDATE_MAP_TYPE';
 
 export function getTeleStationData() {
     let url = 'haii/telestations';
@@ -37,6 +42,14 @@ export function getSSTMatch(date) {
         method: 'GET'
     };
 }
+export function getRainfallForecast(date) {
+    let url = `haii/json/rainfall_forecast_spatial/?date=${date}`
+    return {
+        type: GET_RAINFALL_FORECAST,
+        url,
+        method: 'GET'
+    };
+}
 export function updateDate(date) {
     return {
         type: UPDATE_DATE ,
@@ -53,11 +66,28 @@ export function updateTime(time) {
         }
     };
 }
-export function updateMapLayer(layer) {
+export function updateMapLayer(layer,isChecked) {
     return {
         type: UPDATE_MAP_LAYER ,
         payload : {
-            layer
+            layer,
+            isChecked
+        }
+    };
+}
+export function updateSSTMatchUrl(url) {
+    return {
+        type: UPDATE_SST_MATCHURL ,
+        payload : {
+            url
+        }
+    };
+}
+export function updateGsMapMatchUrl(url) {
+    return {
+        type: UPDATE_GSMAP_MATCHURL ,
+        payload : {
+            url
         }
     };
 }
@@ -70,7 +100,7 @@ export function getDailyDamByType(type) {
     };
 }
 export function getRainfall(dateTime) {
-    let url = `haii/geojson/rainfall?date=${dateTime}&station=telebma0121`;
+    let url = `haii/geojson/rainfall24?date=2017-11-08T17:00`;
     return {
         type: GET_RAINFALL,
         url,
@@ -128,4 +158,17 @@ export function getClipMask() {
         isSpecial : true
     };
 }
-
+export function getBaisins() {
+    return {
+        type: GET_BAISINS,
+        url : 'haii/basins'
+    };
+}
+export function updateMapType(mapType) {
+    return {
+        type: UPDATE_MAP_TYPE,
+        payload : {
+            mapType
+        }
+    };
+}

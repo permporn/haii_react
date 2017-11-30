@@ -3,130 +3,74 @@ import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import './home.scss';
+import './marker-cluster.scss';
+import './marker-clusterdefault.scss';
 import classNames from 'classnames';
 import { Map, Marker, TileLayer, ImageOverlay, GeoJSON, LayersControl, LayerGroup, FeatureGroup } from 'react-leaflet';
+
 //leaflet full screen.
 import './leaflet/leaflet-fullscreen/Fullscreen.js';
 import './leaflet/leaflet-fullscreen/Fullscreen.scss';
-import LegendControl from 'widgets/map/legend-map';
-import TimeScroll from 'widgets/time-scroll/time-scroll';
+import { WMSTileLayer } from 'react-leaflet';
 import {
     getTeleStationData, getDamData, getHbaseData, getThaiBoundary, getRainfall
     , getDailyDamByType, getClipMask, updateDate, updateTime, getLatestWaterLevel,
-    getSSTMatch, getGsMapMatch
+    getSSTMatch, getGsMapMatch, getRainfallForecast, getBaisins, updateMapLayer
 
 } from 'actions/map.action';
+import { getChart24Rainfall , getChartWaterLevel } from 'actions/charts.action';
+import { getAlerts } from 'actions/alerts.action';
 import { pushMainMenu } from 'actions/siteLayout.action';
 import L from 'leaflet';
 import HbaseMapLayer from './hbase/hbase-dam';
 //import DatePicker from 'material-ui/DatePicker';
 import DateRangePicker from 'widgets/date-range-picker/date-range-picker';
-import { loadGeoTiff } from 'widgets/leaflet/leaflet-geotiff';
+
 import LeafletGeoTiff from './leaflet/leafletGeoTiff';
 import { formatDate } from 'widgets/util/format-date';
-
-function style(feature) {
-    return {
-        fillColor: '#000000',
-        weight: 2,
-        opacity: 17,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.4,
-        zIndex: 1
-    };
-}
-// highlight on mouseOver
-function highlightFeature(e) {
-    var layer = e.target;
-
-    layer.setStyle({
-        weight: 5,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.7
-    });
-}
-
-
-
-// reset default style on mouseOut
-function resetHighlight(component, e) {
-    // geojsonresetStyle(e.target);
-    // how to encapsulate GeoJson component/object?
-}
-
-function zoomToFeature(e) {
-    // map.fitBounds(e.target.getBounds());
-    // how to encapsulate Map component/object?
-}
-
-function onEachFeature(component, feature, layer) {
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight.bind(null, component),
-        click: zoomToFeature
-    });
-}
-
-function onEachTeleFeature(component, feature, layer) {
-    let iconRain = L.icon({
-        iconUrl: `public/${feature.style.iconUrl}`,
-        //shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-
-        iconSize: feature.style.iconSize, // size of the icon
-        //shadowSize:   [5, 24], // size of the shadow
-        iconAnchor: feature.style.iconAnchor, // point of the icon which will correspond to marker's location
-        //shadowAnchor: [17, 42],  // the same for the shadow
-        popupAnchor: feature.style.popupAnchor // point from which the popup should open relative to the iconAnchor
-    });
-    if (feature.properties) {
-        var popupString = '<div class="popup">';
-        for (var k in feature.properties) {
-            var v = feature.properties[k];
-            popupString += k + ': ' + v + '<br />';
-        }
-        popupString += '</div>';
-        layer.bindPopup(popupString);
-        layer.setIcon(iconRain);
-    }
-
-}
+import { BASE_URL_GSMAP, BASE_URL_SST } from 'widgets/map/url/map-image-url';
+import Legend from 'widgets/map/legend/legend';
+import CustomLayer from 'widgets/map/custom-layer/custom-layer';
+import ClusterGroup from 'widgets/map/cluster/cluster-group';
+import MyGeocoderPlugin from 'leaflet-geocoder-mapzen';
+import DateTimeSeries from 'widgets/map/date-time-series/date-time-series';
 
 const { Overlay, BaseLayer } = LayersControl;
 
 class Home extends Component {
+
     constructor(props) {
         super(props);
 
         this.state = {
-            url: 'http://27.254.159.141:8085/haii/gsmap/2017/08/01',
-            baseUrl: 'http://27.254.159.141:8085/haii/gsmap',
+            url: 'http://138.68.67.171:8085//haii/gsmap/2017/08/01',
+            baseUrl: 'http://138.68.67.171:8085/haii/gsmap',
             showMainNav: true,
-            sstBaseUrl: 'http://27.254.159.141:8085/haii/sst',
-            sstUrl: 'http://27.254.159.141:8085/haii/sst/2017/08/01'
+            sstBaseUrl: 'http://138.68.67.171:8085/haii/sst',
+            sstUrl: 'http://138.68.67.171:8085/haii/sst/2017/08/01',
+            tiffError: '',
+            markers: [],
+            myLayer: null,
+            forecastSSTUrl: '',
+            forecastGSUrl: ''
         }
     }
     updateImage = (date) => {
         const { mapLayer } = this.props;
         const { baseUrl, selectedIndex, sstBaseUrl } = this.state;
-        switch (mapLayer) {
-            case 'GSMAP':
-                let imageUrl = `${baseUrl}/${date}`;
-                this.setState({
-                    url: imageUrl
-                })
-                break;
-            case 'SST':
-                let sstUrl = `${sstBaseUrl}/${date}`;
-                this.setState({
-                    sstUrl: sstUrl
-                })
-                break;
+        let imageUrl = `${baseUrl}/${date}`;
+        let sstUrl = `${sstBaseUrl}/${date}`;
+        this.setState({
+            url: imageUrl,
+            sstUrl: sstUrl,
+            tiffError: ''
+        })
 
-
-        }
-
+    }
+    handleTiffError = (layer) => {
+        this.setState({
+            tiffError: layer
+        })
     }
     onDateChange = (e, date) => {
         const month = ("0" + (date.getMonth() + 1)).slice(-2),
@@ -155,17 +99,20 @@ class Home extends Component {
         //this.props.getDamData();
         this.props.getRainfall(formatDate(date, time));
     }
-
     componentDidMount() {
-        loadGeoTiff();
         const { date, time } = this.props;
         //this.props.getTeleStationData();
         this.props.getClipMask();
-        this.props.getGsMapMatch('2016/08/02');
-        this.props.getSSTMatch('2016/08/02');
+        this.props.getAlerts();
+        //this.props.getGsMapMatch('2017/01/06');
+        //this.props.getSSTMatch('2016/08/02');
         //this.props.getDamData();
         this.props.getLatestWaterLevel();
+        //this.props.getBaisins();
         this.props.getRainfall(formatDate(date, time));
+        this.props.getChart24Rainfall();
+        this.props.getChartWaterLevel();
+        this.props.getRainfallForecast('2017-09-04');
         //this.props.getDailyDamByType('large');
         const data = {
             query: "select * from ca_views2.ca_views2.view_dam_daily  AS tbl1  JOIN hive.dam as tbl2 ON tbl1.dam_id=tbl2.dam_id where tbl1.dam_date = '2017-01-01' limit 1000",
@@ -178,37 +125,27 @@ class Home extends Component {
 
         //this.props.getHbaseData(data, 'MAP');
         //this.props.getHbaseData(compData, 'CHART');
-        this.props.getThaiBoundary();
+        //this.props.getThaiBoundary();
 
         L.Icon.Default.mergeOptions({
             iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
             iconUrl: require('leaflet/dist/images/marker-icon.png'),
-            shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png')
         });
         if (this.refs.map) {
             window.map = this.refs.map.leafletElement;
             window.map.on('overlayadd', this.onOverlayAdd);
             window.map.addControl(new L.Control.Fullscreen());
         }
+        var geocoder = new MyGeocoderPlugin('mapzen-5nwfpbh');
+        window.map.addControl(geocoder);
+
     }
-
     render() {
-        const teleStationStyle = {
-            "color": "#ff7800",
-            "weight": 10,
-            "opacity": 1
-        };
-        const damStyle = {
-            "color": "#008000",
-            "weight": 10,
-            "opacity": 1
-        };
-
-        const { url, sstUrl } = this.state;
+        const { url, sstUrl, tiffError , forecastSSTUrl , forecastGSUrl } = this.state;
         const { teleStationData, damData, hBaseDamData, thaiBoundaryData,
-            rainFall, dailyDam, clipMask, mapLayer, date, time, latestWaterLevel } = this.props;
-        const center = [51.505, -0.09];
-        const rectangle = [[51.49, -0.08], [51.5, -0.06]];
+            rainFall, dailyDam, clipMask, mapLayer, date, time, latestWaterLevel, baisins
+            , mapType  } = this.props;
         return (
             <div className="row">
                 <section className="col-lg-12" >
@@ -219,30 +156,78 @@ class Home extends Component {
                                     attribution=''
                                     url='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                                 />
-                                {clipMask.size != 0 && mapLayer == "GSMAP" && url != '' ? <LeafletGeoTiff clipMask={clipMask} url={url} /> : null}
-                                {clipMask.size != 0 && mapLayer == "SST" && sstUrl != '' ? <LeafletGeoTiff clipMask={clipMask} url={sstUrl} /> : null}
-                                {rainFall.size != 0 && (mapLayer == "RAINFALL" || mapLayer == "BOUNDARY" ) ? <GeoJSON style={teleStationStyle} data={rainFall} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                {dailyDam.size != 0 && mapLayer == "DAILYDAM" ? <GeoJSON style={teleStationStyle} data={dailyDam} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                {latestWaterLevel.size != 0 && ( mapLayer == "WATERLEVEL" || mapLayer == "BOUNDARY" ) ? <GeoJSON style={teleStationStyle} data={latestWaterLevel} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                {teleStationData.size != 0 && mapLayer == "TELESTATION" ? <GeoJSON data={teleStationData} style={teleStationStyle} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                {thaiBoundaryData.size != 0 && mapLayer == "BOUNDARY" ? <GeoJSON data={thaiBoundaryData} style={style} onEachFeature={onEachFeature.bind(null, this)} /> : null}
-                                {hBaseDamData.size != 0 && mapLayer == "HBASEDAM" ? <HbaseMapLayer data={hBaseDamData} /> : null}
-                                {damData.size != 0 && mapLayer == "DAM" ? <GeoJSON data={damData} style={damStyle} onEachFeature={onEachTeleFeature.bind(null, this)} /> : null}
-                                <LegendControl position='bottomleft'>
-                                    <div className="scrollmenu">
-                                        <TimeScroll updateMapImage={this.updateImage} />
-                                    </div>
-                                </LegendControl>
-                                {/* <LegendControl position='topleft'>
-                                    <DateRangePicker date={date} time={time} updateDate={(date) => this.updateDataByDate(date)} updateTime={(time) => this.updateDataByTime(time)} onChange={this.onDateChange} hintText="DD/MM/YY" />
+                                <LayersControl position="topleft">
+                                    <BaseLayer name="Map nik">
+                                        <TileLayer
+                                            attribution=""
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        />
+                                    </BaseLayer>
+                                    <BaseLayer name="DE">
+                                        <TileLayer
+                                            attribution=""
+                                            url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
+                                        />
+                                    </BaseLayer>
+                                    <BaseLayer checked name="HOT">
+                                        <TileLayer
+                                            attribution=""
+                                            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+                                        />
+                                    </BaseLayer>
+                                    <BaseLayer name="Roads">
+                                        <TileLayer
+                                            attribution=""
+                                            url="https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"
+                                        />
+                                    </BaseLayer>
+                                    <BaseLayer name="DeLorme">
+                                        <TileLayer
+                                            attribution=""
+                                            url=" https://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}"
+                                        />
+                                    </BaseLayer>
+                                    <Overlay name="Boundary">
+                                        <WMSTileLayer
+                                            layers="thailand_boundary"
+                                            TRANSPARENT={true}
+                                            format="image/png"
+                                            url="http://igis.thaiwater.net:80/geoserver/wms?"
+                                        />
+                                    </Overlay>
+                                    <Overlay name="Basin">
+                                        <WMSTileLayer
+                                            layers="thailand_basin"
+                                            TRANSPARENT={true}
+                                            format="image/png"
+                                            url="http://igis.thaiwater.net:80/geoserver/wms?"
+                                        />
+                                    </Overlay>
+                                    <Overlay name="Small Water storage">
+                                        <WMSTileLayer
+                                            layers="small_water_storage"
+                                            TRANSPARENT={true}
+                                            format="image/png"
+                                            url="http://igis.thaiwater.net:80/geoserver/wms?"
+                                        />
+                                    </Overlay>
+                                </LayersControl>
+                                {clipMask.size != 0 && mapType == "MONITORING" && mapLayer.findIndex((layer) => layer == "GSMAP") > -1 && url != '' && tiffError != "GSMAP" ? <LeafletGeoTiff mapLayer="GSMAP" handleTiffError={this.handleTiffError} clipMask={clipMask} url={url} /> : null}
+                                {mapType == "MONITORING" && mapLayer.findIndex((layer) => layer == "SST") > -1 && sstUrl != '' && tiffError != "SST" ? <LeafletGeoTiff mapLayer="SST" handleTiffError={this.handleTiffError}  url={sstUrl} /> : null}
+                                {clipMask.size != 0 && mapType == "FORECAST" && mapLayer.findIndex((layer) => layer == "FORECAST_GSMAP") > -1 && forecastGSUrl != '' && tiffError != "FORECAST_GS" ? <LeafletGeoTiff mapLayer="FORECAST_GS" clipMask={clipMask} url={forecastGSUrl} /> : null}
+                                {clipMask.size != 0 && mapType == "FORECAST" && mapLayer.findIndex((layer) => layer == "FORECAST_SST") > -1 && forecastSSTUrl != '' && tiffError != "FORECAST_SST" ? <LeafletGeoTiff mapLayer="FORECAST_SST" clipMask={clipMask} url={forecastSSTUrl} /> : null}
+                                {rainFall.size != 0 && mapType == "MONITORING" && mapLayer.findIndex((layer) => layer == "RAINFALL") > -1 ? <ClusterGroup layer="rainfall" data={rainFall} >  </ClusterGroup> : null}
+                                {latestWaterLevel.size != 0  && mapType == "MONITORING" && mapLayer.findIndex((layer) => layer == "WATERLEVEL") > -1 ?
+                                    <ClusterGroup data={latestWaterLevel} layer="waterlevel" >  </ClusterGroup> : null}
+                                <DateTimeSeries mapType={mapType} updateImage={this.updateImage} mapLayer={mapLayer} />
 
-                                </LegendControl> */}
+                                <Legend  mapType={mapType} mapLayer={mapLayer} />
+                                <CustomLayer mapLayer={mapLayer} showRightNav={this.props.showRightNav} updateMapLayer={this.props.updateMapLayer} mapType={mapType} />
                             </Map>
 
                         </div>
                     </div>
                 </section>
-
 
 
             </div>
@@ -261,7 +246,7 @@ Home.contextTypes = {
     history: PropTypes.object
 };
 
-const mapStateToProps = ({ mapData }) => ({
+const mapStateToProps = ({ mapData, siteLayout  , auth }) => ({
     teleStationData: mapData.get('teleStationData'),
     damData: mapData.get('damData'),
     hBaseDamData: mapData.get('hBaseDamData'),
@@ -272,8 +257,11 @@ const mapStateToProps = ({ mapData }) => ({
     mapLayer: mapData.get('mapLayer'),
     date: mapData.get('date'),
     time: mapData.get('time'),
-    latestWaterLevel: mapData.get('latestWaterLevel')
-
+    latestWaterLevel: mapData.get('latestWaterLevel'),
+    baisins: mapData.get('baisins'),
+    mapType: mapData.get('mapType'),
+    showRightNav: siteLayout.get('showRightNav'),
+    auth
 });
 
 function mapDispatchToProps(dispatch) {
@@ -289,7 +277,13 @@ function mapDispatchToProps(dispatch) {
         updateTime: bindActionCreators(updateTime, dispatch),
         getLatestWaterLevel: bindActionCreators(getLatestWaterLevel, dispatch),
         getSSTMatch: bindActionCreators(getSSTMatch, dispatch),
-        getGsMapMatch: bindActionCreators(getGsMapMatch, dispatch)
+        getGsMapMatch: bindActionCreators(getGsMapMatch, dispatch),
+        getRainfallForecast: bindActionCreators(getRainfallForecast, dispatch),
+        getBaisins: bindActionCreators(getBaisins, dispatch),
+        updateMapLayer: bindActionCreators(updateMapLayer, dispatch),
+        getChart24Rainfall: bindActionCreators(getChart24Rainfall,dispatch),
+        getAlerts: bindActionCreators(getAlerts,dispatch),
+        getChartWaterLevel: bindActionCreators(getChartWaterLevel,dispatch)
     }
 }
 Home = connect(mapStateToProps, mapDispatchToProps)(Home);

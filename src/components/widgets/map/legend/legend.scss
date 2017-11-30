@@ -1,0 +1,52 @@
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 5px;
+    height: 30px;;
+    float: left;
+    margin-right: 8px;
+    opacity: 1;
+}
+
+.absolute{
+    clear: none;
+    margin-left: 6em;
+}
+
+.info.legend {
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    width: 135px;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    .legend-container{
+        margin-top: 10px;
+        div{
+            display: flex;
+            flex-direction: row-reverse;
+            width: 65%;
+        }
+    }
+}
+.info-label{
+    text-align: left;
+    padding-left: 10px;
+    border-left: 1px solid #555;
+    border-top: 1px solid #555;
+    max-width: 5px;
+    white-space: pre;
+    position: relative;
+    .label-text{
+        color: #555;
+        position: absolute;
+        top: -8px;
+        left: 15px;
+    }
+}
+.info-grade{
+    padding-right: 10px;
+}

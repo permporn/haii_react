@@ -3,7 +3,7 @@ import { xml2json } from 'xml2json-light';
 import { pushPath } from 'redux-simple-router';
 import $ from 'jquery';
 
-const baseUrl = 'http://27.254.159.141:8085/';
+const baseUrl = 'http://138.68.67.171:8085/';
 const baseUrlHBase = 'http://27.254.159.141:8047/';
 const geoJsonBase = 'http://watersituation.thaiwater.net/v1/public/resources/json/';
 const clipUrl = 'https://api.myjson.com/';
@@ -15,7 +15,7 @@ export default store => next => action => {
 
     if (action.isSpecial) {
         if (!action.isThaiBoundary)
-            requestUrl = `${baseUrlHBase}`;
+            requestUrl = `${baseUrl}`;
         else if (action.isMask)
             requestUrl = `${clipUrl}`;
         else
@@ -46,14 +46,17 @@ export default store => next => action => {
             if (typeof action.data === 'object') {
                 data = action.data;
             }
+            let token = window.localStorage.getItem('token');
             params.method = action.method || 'GET';
+            params.headers = {
+                    'content-type': 'application/json',
+                    'Authorization' : `Bearer ${token}`
+                };
 
             if (action.isAuth) {
-                params.headers = {
-                    'content-type': 'application/json',
-                    'cache-control': 'no-cache',
-                    'dataType': 'json'
-                };
+                // params.headers = {
+                //     'content-type': 'application/json'
+                // };
             }
             if (data) {
                 if (data instanceof FormData) {
@@ -68,8 +71,9 @@ export default store => next => action => {
                     const
                         contentType = response.headers.get('content-type');
 
-                    if (response.status === 401) {
-
+                    if (response.status === 403) {
+                        window.localStorage.removeItem("token");
+                        store.dispatch(pushPath('/signin'));
                     }
                     if (response.status >= 400 && response.status < 600) {
                         const error = new Error(response.statusText);

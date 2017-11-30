@@ -1,0 +1,68 @@
+#time-slider-dates {
+    .time-slider {
+      position: relative;
+      display: inline-block;
+      box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.75);
+      text-align: left;
+      //background: rgba(0, 0, 0, 0.75);
+      background: -moz-linear-gradient(left, #3294FC 0%, #3294FC 19%, rgba(50,148,252,1) 19%, rgba(72,145,224,1) 56%, rgba(104,165,230,1) 100%);
+      background: -webkit-gradient(left top, right top, color-stop(0%, #3294FC), color-stop(19%, #3294FC), color-stop(19%, rgba(50,148,252,1)), color-stop(56%, rgba(72,145,224,1)), color-stop(100%, rgba(104,165,230,1)));
+      background: -webkit-linear-gradient(left, #3294FC 0%, #3294FC 19%, rgba(50,148,252,1) 19%, rgba(72,145,224,1) 56%, rgba(104,165,230,1) 100%);
+      background: -o-linear-gradient(left, #3294FC 0%, #3294FC 19%, rgba(50,148,252,1) 19%, rgba(72,145,224,1) 56%, rgba(104,165,230,1) 100%);
+      background: -ms-linear-gradient(left, #3294FC 0%, #3294FC 19%, rgba(50,148,252,1) 19%, rgba(72,145,224,1) 56%, rgba(104,165,230,1) 100%);
+      background: linear-gradient(to right, #3294FC 0%, #3294FC 19%, rgba(50,148,252,1) 19%, rgba(72,145,224,1) 56%, rgba(104,165,230,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#68a5e6', GradientType=1 );
+      opacity: 0.9;
+      border-radius: 5px;
+      width: auto;
+      > div {
+        > div {
+          margin: 0 auto !important;
+        }
+      }
+    }
+  
+    .slider {
+      position: relative;
+      > div {
+        width: 75% !important;
+        position: absolute !important;
+        top: -9px;
+        left: 12%;
+        > div {
+          > div:first-child {
+            background-color: #414141 !important;
+          }
+        }
+      }
+    }
+    .slider-list {
+      list-style: none;
+    }
+    .slider-header {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding: 0 35px;
+      .current-date {
+        color: black !important;
+        background-color: white;
+        opacity: 0.9;
+      }
+      > li {
+        display: inline-block;
+        padding: 5px 11px;
+        color: white;
+        width: auto;
+        text-align: center;
+      }
+    }
+  
+    .time-slider-wrapper {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 0;
+      text-align: center;
+      bottom: 100px;
+    }
+  }

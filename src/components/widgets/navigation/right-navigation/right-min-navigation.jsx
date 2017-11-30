@@ -13,6 +13,7 @@ class RightMinNavigationMenu extends Component {
     maximizeRightNav = () => {
         this.props.toggleRightNav();
     }
+    
 
     // render method of Class
     render() {
@@ -20,7 +21,14 @@ class RightMinNavigationMenu extends Component {
         return (
             showRightNav == false ? <aside className="control-sidebar control-sidebar-dark control-sidebar-open  minimize">
 
-                <i onClick={this.maximizeRightNav} className="material-icons hidenav">keyboard_arrow_left</i>
+            <ul className="vertical-list">
+                <li onClick={this.maximizeRightNav}><a href="#"><span className="ti-bell"></span></a></li>
+                <li><a href="#"><span className="ti-pie-chart"></span></a></li>
+                <li><a href="#"><span className="ti-alert"></span></a></li>
+                <li><a href="#"><span className="ti-lock"></span></a></li>
+            </ul>
+
+                {/* <i onClick={this.maximizeRightNav} className="ti-bell hidenav"></i>
                 <ul className="control-sidebar-menu">
                     {
                         RIGHT_LIST.map((menu, index) => {
@@ -38,7 +46,7 @@ class RightMinNavigationMenu extends Component {
                     }
 
 
-                </ul>
+                </ul> */}
             </aside> : null
         );
     }

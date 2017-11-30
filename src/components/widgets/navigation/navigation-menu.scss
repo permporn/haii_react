@@ -46,7 +46,7 @@
 }
 
 .open {
-    width: 300px;
+    width: 287px;
 }
 .close {
     width : 0;
@@ -203,30 +203,12 @@ vertical-nav ul li ul li a:hover {
 .left-menu-scroll::-webkit-scrollbar-thumb {
     background-color: #B4B9BD;
 } 
+.custom-sub {
+    margin : 0px !important;
+}
+.custom-subitem {
+    color: #e0e0e0 !important;
+    padding: 4px;
+    padding-left: 38px;
+}
 
-table {
-    border-spacing: 1;
-    width: 100%;
-  }
-  
-  td {
-    padding: 2px 5px;
-  }
-  
-  .jsonOdd {
-    background: rgb(163, 184, 241);
-  }
-
-  .rowSelected {
-    background: #ffe;
-  }
-  .cellSelected {
-    background: #eef;
-  }
-  .headerSelected {
-    color: blue;
-  }
-
-  .textBig {
-      font-size: 2em;
-  }
